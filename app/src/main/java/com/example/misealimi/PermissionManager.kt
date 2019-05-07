@@ -1,6 +1,5 @@
 package com.example.misealimi
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -10,13 +9,11 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 
 object PermissionManager{
-
-
     fun isExist_deniedPermission(context: Context, permissions: Array<out String>) : Boolean
             = deniedPermListOf(context, permissions).isNotEmpty()
 
     fun deniedPermListOf(context: Context, permissions: Array<out String>): Array<String>
-        = permissionForGPS.filter {
+        = permissionsForEssential.filter {
             PackageManager.PERMISSION_GRANTED !=
             ContextCompat.checkSelfPermission(context, it)
         }.toTypedArray()
@@ -30,7 +27,7 @@ object PermissionManager{
         builder.setPositiveButton("예",
             object: DialogInterface.OnClickListener{
                 override fun onClick(dialog: DialogInterface?, id: Int)
-                    = ActivityCompat.requestPermissions(activity, permissions, PERMISSIONCODE_GPS)
+                    = ActivityCompat.requestPermissions(activity, permissions, PERMISSIONCODE_ESSENTIAL)
             })
         builder.setNegativeButton("아니오(종료)",
             object: DialogInterface.OnClickListener{
