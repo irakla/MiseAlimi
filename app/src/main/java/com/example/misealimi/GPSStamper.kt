@@ -1,25 +1,46 @@
 package com.example.misealimi
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 
-class GPSStamper(view : GPSTimelineView) : LocationListener{
+
+
+class GPSStamper(private val view : AppCompatActivity) : LocationListener{
     private val lm : LocationManager
-    private val gpsTimeline : MutableList<GPSTimeStamp>
+    val gpsTimeline = GPSTimelineManager.gpsTimeline
     private var nowLocation : Location? = null
 
     init{
         lm = view.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        gpsTimeline = view.gpsTimeline
+    }
+
+    fun initializeLocationManager(){
+        println("Stamper is not null")
+        if(ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
+            || ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            println("coarse permission : " + (ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
+            println("fine permission : " + (ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED))
+            return
+        }
+
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1800, 1000.toFloat(), this)
+        println("Stamper initializing is finished.")
     }
 
     fun stamp(){
-        nowLocation ?: return
+        if(nowLocation == null){
+            println("GPSStamper.stamp : Location is null")
+            return
+        }
 
-        var gpstimestamp : GPSTimeStamp = GPSTimeStamp(nowLocation as Location)
+        var gpstimestamp = GPSTimeStamp(nowLocation as Location)
         gpsTimeline.add(gpstimestamp)
         println("Misealimiback : Location has added.")
     }
