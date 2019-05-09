@@ -10,8 +10,6 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 
-
-
 class GPSStamper(private val view : AppCompatActivity) : LocationListener{
     private val lm : LocationManager
     val gpsTimeline = GPSTimelineManager.gpsTimeline
@@ -23,8 +21,7 @@ class GPSStamper(private val view : AppCompatActivity) : LocationListener{
 
     fun initializeLocationManager(){
         println("Stamper is not null")
-        if(ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
-            || ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+        if(PermissionManager.isExist_deniedPermission(view, permissionForEssential)) {
             println("coarse permission : " + (ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
             println("fine permission : " + (ContextCompat.checkSelfPermission(view, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED))
             return

@@ -8,8 +8,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
-const val PERMISSIONCODE_GPS: Int = 1000
-val permissionForGPS: Array<out String> = arrayOf(
+const val PERMISSIONCODE_Essential: Int = 1000
+val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION,
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.INTERNET
@@ -35,9 +35,9 @@ class MainActivity : AppCompatActivity() {
         gpsBackground = GPSStamper(this)
 
         //권한 요청
-        if(PermissionManager.isExist_deniedPermission(this, permissionForGPS)) {
+        if(PermissionManager.isExist_deniedPermission(this, permissionForEssential)) {
             PermissionManager.showRequest(this,
-                PermissionManager.deniedPermListOf(this, permissionForGPS), PERMISSIONCODE_GPS,
+                PermissionManager.deniedPermListOf(this, permissionForEssential), PERMISSIONCODE_Essential,
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
 
