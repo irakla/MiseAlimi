@@ -1,11 +1,13 @@
 package com.example.misealimi
 
 import android.Manifest
+import android.databinding.DataBindingUtil
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.example.misealimi.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val PERMISSIONCODE_Essential: Int = 1000
@@ -17,22 +19,12 @@ val permissionForEssential: Array<out String> = arrayOf(
     get() = field.clone()
 
 class MainActivity : AppCompatActivity() {
-    private var timelineList: GPSTimelineManager? = null
-
     private var gpsBackground: GPSStamper? = null
     val timeline = GPSTimelineManager.gpsTimeline
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        timeline.add(GPSTimeStamp(Location("A")))
-        (gpsTimelineView as RecyclerView).apply {
-            adapter = GPSStampAdapter(timeline)
-        }
-        (gpsTimelineView as RecyclerView).layoutManager = LinearLayoutManager(this)
-
-        gpsBackground = GPSStamper(this)
 
         //권한 요청
         if(PermissionManager.isExist_deniedPermission(this, permissionForEssential)) {
@@ -41,8 +33,15 @@ class MainActivity : AppCompatActivity() {
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
 
+        gpsTimelineView.adapter = GPSStampAdapter(timeline)
+        gpsBackground = GPSStamper(this)
+
+        button.setOnClickListener {
+            gpsTimelineView.adapter?.notifyItemChanged(timeline.size)
+        }
+
+
         gpsBackground?.initializeLocationManager()
-        gpsBackground?.stamp()
     }
 
 

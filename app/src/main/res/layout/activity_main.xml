@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity">
-
-    <LinearLayout
-        android:id="@+id/mainlinear"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <Button
-                android:text="gps Test Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/button" android:layout_weight="1"
-                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5" android:padding="30dp"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/gpsTimelineView"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/tools">
+    <data>
+        <import type="android.databinding.ObservableArrayList"/>
+        <import type="com.example.misealimi.GPSTimeStamp" />
+        <variable name="timeline" type="ObservableArrayList&lt;GPSTimeStamp&gt;" />
+        
+        <variable name="GPSStampAdapter"
+                  type="com.example.misealimi.GPSStampAdapter" />
+    </data>
+    <android.support.constraint.ConstraintLayout
+            xmlns:tools="http://schemas.android.com/tools"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFF33"
-            android:layout_weight="9"/>
-    </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+            tools:context=".MainActivity">
+    
+        <LinearLayout
+            android:id="@+id/mainlinear"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+    
+            <Button
+                    android:text="gps Test Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/button" android:layout_weight="1"
+                    app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5" android:padding="30dp"/>
+    
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/gpsTimelineView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFFF33"
+                android:layout_weight="9"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+                
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+</layout>
