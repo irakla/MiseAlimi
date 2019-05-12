@@ -15,7 +15,7 @@ object PermissionManager{
             = deniedPermListOf(context, permissions).isNotEmpty()
 
     fun deniedPermListOf(context: Context, permissions: Array<out String>): Array<String>
-        = permissionForEssential.filter {
+        = permissions.filter {
             PackageManager.PERMISSION_GRANTED !=
             ContextCompat.checkSelfPermission(context, it)
         }.toTypedArray()
