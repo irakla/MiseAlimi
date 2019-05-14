@@ -9,11 +9,13 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 
 object PermissionManager{
+
+
     fun isExist_deniedPermission(context: Context, permissions: Array<out String>) : Boolean
             = deniedPermListOf(context, permissions).isNotEmpty()
 
     fun deniedPermListOf(context: Context, permissions: Array<out String>): Array<String>
-        = permissionsForEssential.filter {
+        = permissions.filter {
             PackageManager.PERMISSION_GRANTED !=
             ContextCompat.checkSelfPermission(context, it)
         }.toTypedArray()
@@ -27,7 +29,7 @@ object PermissionManager{
         builder.setPositiveButton("예",
             object: DialogInterface.OnClickListener{
                 override fun onClick(dialog: DialogInterface?, id: Int)
-                    = ActivityCompat.requestPermissions(activity, permissions, PERMISSIONCODE_ESSENTIAL)
+                    = ActivityCompat.requestPermissions(activity, permissions, PERMISSIONCODE_Essential)
             })
         builder.setNegativeButton("아니오(종료)",
             object: DialogInterface.OnClickListener{

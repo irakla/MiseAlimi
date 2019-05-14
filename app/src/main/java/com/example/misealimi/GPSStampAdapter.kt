@@ -1,34 +1,54 @@
 package com.example.misealimi
 
+import android.databinding.*
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.gps_cell.view.*
 
-class GPSStampAdapter(private val myDataset: MutableList<GPSTimeStamp>)
-    : RecyclerView.Adapter<GPSStampAdapter.GPSTimeStampViewHolder>(){
+class GPSStampAdapter(private var timelineDataset: ObservableArrayList<GPSTimeStamp>)
+    : RecyclerView.Adapter<GPSTimeStampViewHolder>()
+    {
 
-    class GPSTimeStampViewHolder(val gpsCellView : RelativeLayout) : RecyclerView.ViewHolder(gpsCellView){
-        val contentLine: TextView
+    init{
+        timelineDataset.addOnListChangedCallback(object:
+            ObservableList.OnListChangedCallback<ObservableArrayList<GPSTimeStamp>>() {
+            override fun onItemRangeRemoved(
+                sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
+            ) = notifyItemRangeRemoved(positionStart, itemCount)
 
-        init{
-            contentLine = gpsCellView.contentLine as TextView
-        }
+            override fun onItemRangeMoved(
+                sender: ObservableArrayList<GPSTimeStamp>?,
+                fromPosition: Int, toPosition: Int, itemCount: Int
+            ) = notifyItemMoved(fromPosition, toPosition)
+
+            override fun onItemRangeInserted(
+                sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
+            ) = notifyItemRangeInserted(positionStart, itemCount)
+
+            override fun onItemRangeChanged(
+                sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
+            ) = notifyItemRangeChanged(positionStart, itemCount)
+
+            override fun onChanged(sender: ObservableArrayList<GPSTimeStamp>?
+            ) = notifyDataSetChanged()
+        })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GPSTimeStampViewHolder {
-        val textView = LayoutInflater.from(parent.context).inflate(R.layout.gps_cell, parent, false)
-                as RelativeLayout
+        val inflater = LayoutInflater.from(parent.context)
+        val gpsCell = inflater.inflate(R.layout.gps_cell, parent, false) as LinearLayout
 
-        return GPSTimeStampViewHolder(textView)
+        return GPSTimeStampViewHolder(gpsCell)
     }
 
-    override fun getItemCount() = myDataset.size
+    override fun getItemCount() = timelineDataset.size
 
     override fun onBindViewHolder(holder: GPSTimeStampViewHolder, position: Int) {
-        holder.contentLine.text = "CONTENT"
+        holder.latitudeView.setText(String.format("%.3f", timelineDataset[position].location.latitude) + ", ")
+        holder.longitudeView.setText(String.format("%.3f", timelineDataset[position].location.longitude))
+        holder.timeView.setText(timelineDataset[position].theTimeNotification)
     }
 }

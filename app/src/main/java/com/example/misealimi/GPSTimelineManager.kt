@@ -1,7 +1,10 @@
 package com.example.misealimi
 
+import android.databinding.ObservableArrayList
+import java.util.*
+
 object GPSTimelineManager {
-    var gpsTimeline : MutableList<GPSTimeStamp> = mutableListOf<GPSTimeStamp>()
+    var gpsTimeline : ObservableArrayList<GPSTimeStamp> = ObservableArrayList<GPSTimeStamp>()
         get() = field
         private set(newTimeLine) { field = newTimeLine }
 
