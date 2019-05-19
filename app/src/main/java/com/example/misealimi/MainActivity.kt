@@ -14,7 +14,8 @@ const val PERMISSIONCODE_Essential: Int = 1000
 val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION,
     Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.INTERNET
+    Manifest.permission.INTERNET,
+    Manifest.permission.ACCESS_NETWORK_STATE
 )
     get() = field.clone()
 
@@ -33,13 +34,12 @@ class MainActivity : AppCompatActivity() {
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
 
-        gpsTimelineView.adapter = GPSStampAdapter(timeline)
+        gpsTimelineView.adapter = GPSStampAdapter(this, timeline)
         gpsBackground = GPSStamper(this)
 
         button.setOnClickListener {
-            gpsTimelineView.adapter?.notifyItemChanged(timeline.size)
+            gpsTimelineView.adapter?.notifyDataSetChanged()
         }
-
 
         gpsBackground?.initializeLocationManager()
     }

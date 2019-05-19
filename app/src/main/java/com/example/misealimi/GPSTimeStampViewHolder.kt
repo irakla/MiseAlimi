@@ -9,10 +9,12 @@ class GPSTimeStampViewHolder(val gpsCellView : LinearLayout) : RecyclerView.View
     val latitudeView: TextView
     val longitudeView: TextView
     val timeView: TextView
+    val airInfoView: TextView
 
     init{
         latitudeView = gpsCellView.latitude
         longitudeView = gpsCellView.longitude
         timeView = gpsCellView.time
+        airInfoView = gpsCellView.air
     }
 }

@@ -7,6 +7,4 @@ object GPSTimelineManager {
     var gpsTimeline : ObservableArrayList<GPSTimeStamp> = ObservableArrayList<GPSTimeStamp>()
         get() = field
         private set(newTimeLine) { field = newTimeLine }
-
-
 }
