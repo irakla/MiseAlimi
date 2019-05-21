@@ -23,12 +23,14 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
             Manifest.permission.INTERNET
         )
 
-        var min_PeriodLocationRefresh:Long = 30
+        var min_PeriodLocationRefresh:Long = 1
         var meter_MinimalDistanceFromPrev:Float = 200.toFloat()
     }
 
     init{
         lm = view_Main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        GPSTimelineManager.initializeTimeline(view_Main)
+        nowLocation = GPSTimelineManager.gpsTimeline[0]?.location
     }
 
     fun initializeLocationManager(){
@@ -40,7 +42,7 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
         }
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER
-            , min_PeriodLocationRefresh * 60000, meter_MinimalDistanceFromPrev, this)
+            , /*min_PeriodLocationRefresh * 60000*/1, meter_MinimalDistanceFromPrev, this)
         println("Stamper initializing is finished.")
     }
 
@@ -51,16 +53,29 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
         }
 
         try {
-            GPSTimeStamp(view_Main, nowLocation as Location)
+            saveToDB(GPSTimeStamp(view_Main, nowLocation as Location))
         }catch(e: Exception){
             println("catch in stamp... ${e.toString()}")
         }
     }
 
+    private fun saveToDB(newTimeStamp: GPSTimeStamp){
+        val sqlInsert = "INSERT INTO timeline (time_mil, latitude, longitude, airJSON, provider) " +
+                "values('${newTimeStamp.location.time}', '${newTimeStamp.location.latitude}', " +
+                "'${newTimeStamp.location.longitude}', '${newTimeStamp.airInfo.toString()}', " +
+                "'${newTimeStamp.location.provider}')"
+
+        val db = TimelineDBHelper(view_Main)
+        db.writableDatabase.execSQL(sqlInsert)
+    }
+
     override fun onLocationChanged(location: Location?) {
         location ?: return
+        if(nowLocation?.time == location?.time)
+            return
 
         nowLocation = location
+        println("Location : ${location?.provider}")
         stamp()
         println("Misealimiback : Location has changed.")
     }

@@ -31,7 +31,7 @@ class GPSTimeStamp(view_Main: AppCompatActivity, location : Location){
     init{
         this.location = location
         setTime()
-        GPSTimelineManager.gpsTimeline.add(this)
+        GPSTimelineManager.gpsTimeline.add(0, (this))
         println("Misealimiback : New timestamp has created: ${location}")
         DownloaderForAirInfo(view_Main).execute(this).get()
     }
