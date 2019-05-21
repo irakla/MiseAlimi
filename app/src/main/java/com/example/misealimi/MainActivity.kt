@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.example.misealimi.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val PERMISSIONCODE_Essential: Int = 1000
