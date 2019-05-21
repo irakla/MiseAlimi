@@ -22,6 +22,9 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.INTERNET
         )
+
+        var min_PeriodLocationRefresh:Long = 30
+        var meter_MinimalDistanceFromPrev:Float = 200.toFloat()
     }
 
     init{
@@ -36,7 +39,8 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
             return
         }
 
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300, 200.toFloat(), this)
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER
+            , min_PeriodLocationRefresh * 60000, meter_MinimalDistanceFromPrev, this)
         println("Stamper initializing is finished.")
     }
 
