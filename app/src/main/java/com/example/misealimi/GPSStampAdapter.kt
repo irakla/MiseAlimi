@@ -57,5 +57,7 @@ class GPSStampAdapter(
         holder.timeView.setText(nowTimeStamp.theTimeNotification)
         holder.airInfoView.setText("측정정보 : ${nowTimeStamp.airInfo?.getString("dataTime")} \n"
             + nowTimeStamp.airInfo?.getString("pm10Value") + "ppm")
+
+        val dong = nowTimeStamp.airInfo?.getString("name")
     }
 }

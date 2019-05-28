@@ -64,12 +64,12 @@ class DownloaderForAirInfo(private val view_Main: AppCompatActivity)
 
             nowAirInfo = JSONObject(rawJSONBuffer.toString())
 
-            println("nowAirInfo : ${nowAirInfo.toString()}")
-            println("rawJSONBuffer : ${rawJSONBuffer.toString()}")
+            println("nowAirInfo : ${nowAirInfo}")
+            println("rawJSONBuffer : ${rawJSONBuffer}")
             println("is equal : ${nowAirInfo.toString().compareTo(rawJSONBuffer.toString())}")
         }
         catch(e: JSONException){
-            println("Contents got is invalid json : ${rawJSONBuffer.toString()}")
+            println("Contents got is invalid json : ${rawJSONBuffer}")
             throw e
         }
 

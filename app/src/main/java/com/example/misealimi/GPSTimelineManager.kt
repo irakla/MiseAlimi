@@ -3,6 +3,7 @@ package com.example.misealimi
 import android.databinding.ObservableArrayList
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
+import org.json.JSONObject
 
 object GPSTimelineManager {
     var gpsTimeline : ObservableArrayList<GPSTimeStamp> = ObservableArrayList<GPSTimeStamp>()
@@ -21,7 +22,9 @@ object GPSTimelineManager {
                 location.latitude = dbCursor.getDouble(dbCursor.getColumnIndex("latitude"))
                 location.longitude = dbCursor.getDouble(dbCursor.getColumnIndex("longitude"))
 
-                GPSTimeStamp(view_Main, location)
+                val airInfo: AirInfoType = JSONObject(dbCursor.getString(dbCursor.getColumnIndex("airJSON")))
+
+                GPSTimeStamp(view_Main, location, airInfo)
             }while(dbCursor.moveToNext())
         dbCursor.close()
     }

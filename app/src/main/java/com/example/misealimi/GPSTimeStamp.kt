@@ -14,7 +14,7 @@ import java.util.*
 var formatstr: String = "yy년 MM월 dd일 E\n" +
         "a hh시mm분"
 
-class GPSTimeStamp(view_Main: AppCompatActivity, location : Location){
+class GPSTimeStamp(view_Main: AppCompatActivity, location : Location, airInfo: AirInfoType = null){
     val location : Location
     var theTimeNotification = Date(location.time).toString()
         get() = field
@@ -33,7 +33,10 @@ class GPSTimeStamp(view_Main: AppCompatActivity, location : Location){
         setTime()
         GPSTimelineManager.gpsTimeline.add(0, (this))
         println("Misealimiback : New timestamp has created: ${location}")
-        DownloaderForAirInfo(view_Main).execute(this).get()
+        if(airInfo == null)
+            DownloaderForAirInfo(view_Main).execute(this).get()
+        else
+            this.airInfo = airInfo
     }
 
     private fun setTime(){

@@ -5,7 +5,7 @@
         <import type="android.databinding.ObservableArrayList"/>
         <import type="com.example.misealimi.GPSTimeStamp" />
         <variable name="timeline" type="ObservableArrayList&lt;GPSTimeStamp&gt;" />
-        
+    
         <variable name="GPSStampAdapter"
                   type="com.example.misealimi.GPSStampAdapter" />
     </data>

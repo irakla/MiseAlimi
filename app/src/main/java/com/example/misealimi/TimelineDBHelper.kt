@@ -4,6 +4,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+//TODO : DB에서 삭제하는 기능 구현
+
 class TimelineDBHelper(context: Context)
     : SQLiteOpenHelper(context, DB_NAME, null, DB_VER){
 
