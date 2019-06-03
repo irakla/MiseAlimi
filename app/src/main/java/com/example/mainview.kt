@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
-import com.example.misealimi.R
 import kotlinx.android.synthetic.main.activity_mainview.*
 
 class mainview : AppCompatActivity() {

@@ -5,7 +5,6 @@ import android.os.Bundle
 import com.example.misealimi.GPSStampAdapter
 import com.example.misealimi.GPSStamper
 import com.example.misealimi.GPSTimelineManager
-import com.example.misealimi.R
 import kotlinx.android.synthetic.main.activity_gps_list.*
 
 class gps_list : AppCompatActivity() {

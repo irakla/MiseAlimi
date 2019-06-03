@@ -3,6 +3,7 @@ package com.example.misealimi
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_gps_list.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
 import org.json.JSONObject

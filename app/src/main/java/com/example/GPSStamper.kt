@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import com.example.myapplication.PermissionManager
 import java.lang.Exception
 
 class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{

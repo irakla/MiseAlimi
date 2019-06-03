@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.myapplication.R
 import kotlinx.android.synthetic.main.gps_cell.view.*
 
 class GPSStampAdapter(
