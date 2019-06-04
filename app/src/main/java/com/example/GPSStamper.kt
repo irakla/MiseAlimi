@@ -31,7 +31,9 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
     init{
         lm = view_Main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         GPSTimelineManager.initializeTimeline(view_Main)
-        nowLocation = GPSTimelineManager.gpsTimeline[0]?.location
+
+        if(gpsTimeline.size > 0)
+            nowLocation = GPSTimelineManager.gpsTimeline[0]?.location
     }
 
     fun initializeLocationManager(){
