@@ -10,7 +10,8 @@ import android.widget.TextView
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.gps_cell.view.*
 
-class GPSStampAdapter(
+class
+GPSStampAdapter(
     private val view_Main: AppCompatActivity,
     private var timelineDataset: ObservableArrayList<GPSTimeStamp>)
     : RecyclerView.Adapter<GPSTimeStampViewHolder>()
