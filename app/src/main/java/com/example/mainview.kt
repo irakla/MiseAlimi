@@ -1,11 +1,13 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_mainview.*
 
 class mainview : AppCompatActivity() {
@@ -16,7 +18,11 @@ class mainview : AppCompatActivity() {
         viewList.add(layoutInflater.inflate(R.layout.fragment_amount_info,null))
         viewList.add(layoutInflater.inflate(R.layout.fragment_text_info,null))
         viewList.add(layoutInflater.inflate(R.layout.fragment_air_info,null))
-
+        val preference = getSharedPreferences("User", Context.MODE_PRIVATE)
+        preference.edit().putString("name",intent.getStringExtra("name")).apply()
+        preference.edit().putString("age",intent.getStringExtra("age")).apply()
+        preference.edit().putString("weight", intent.getStringExtra("weight")).apply()
+        Toast.makeText(this, preference.getString("name","seokwon"), Toast.LENGTH_SHORT).show()
         viewPager.adapter = pagerAdapter()
     }
     fun detail(view: View) {

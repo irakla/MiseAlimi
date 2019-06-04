@@ -26,11 +26,8 @@ val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_NETWORK_STATE
 )
     get() = field.clone()
-
-
 class MainActivity : AppCompatActivity() {
     lateinit var myWebView: WebView
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +47,6 @@ class MainActivity : AppCompatActivity() {
                 PermissionManager.deniedPermListOf(this, permissionForEssential), PERMISSIONCODE_Essential,
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
-
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -83,17 +79,13 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         //////for log
         println("requestCode : $requestCode")
         println()
-
         for(index: Int in 0..grantResults.size - 1)
             println(permissions[index] + " : " + if(grantResults[index] == 0) "허가됨" else "불허")
     }
 }
-
-
 private class MyWebViewClient : WebViewClient() {
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         if (view != null) {
