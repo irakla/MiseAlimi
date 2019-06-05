@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class GatheringService : Service() {
+/*class GatheringService : Service() {
     private val INTERVAL: Long = 10 * 1000
     //private long INTERVAL = 10*1000;
     private val mHandler: Handler = Handler()
@@ -52,4 +52,4 @@ class GatheringService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-}
+}*/
