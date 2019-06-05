@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        //test for service
+        startService(Intent(this, GatheringService()))
+
         myWebView = findViewById(R.id.webview)
         myWebView.webChromeClient = WebChromeClient()
         myWebView.webViewClient = WebViewClient()
