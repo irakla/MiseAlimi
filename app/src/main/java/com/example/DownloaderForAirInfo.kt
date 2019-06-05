@@ -3,6 +3,7 @@ package com.example.misealimi
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import com.example.myapplication.gps_list
 import kotlinx.android.synthetic.main.activity_gps_list.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
@@ -78,8 +79,13 @@ class DownloaderForAirInfo(private val view_Main: AppCompatActivity)
     }
 
     override fun onPostExecute(result: AirInfoType) {
-        val adapterForTimelineView = view_Main.gpsTimelineView.adapter
-        adapterForTimelineView?.notifyDataSetChanged()
+        when(view_Main){
+            is gps_list -> {
+                val adapterForTimelineView = view_Main.gpsTimelineView.adapter
+                adapterForTimelineView?.notifyDataSetChanged()
+            }
+        }
+
         super.onPostExecute(result)
     }
 }

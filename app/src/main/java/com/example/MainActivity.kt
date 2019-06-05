@@ -17,6 +17,10 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import android.support.v4.app.NavUtils
 import android.webkit.WebChromeClient
+import com.example.misealimi.GPSStampAdapter
+import com.example.misealimi.GPSStamper
+import com.example.misealimi.GPSTimelineManager
+import kotlinx.android.synthetic.main.activity_gps_list.*
 
 const val PERMISSIONCODE_Essential: Int = 1000
 val permissionForEssential: Array<out String> = arrayOf(
@@ -26,16 +30,18 @@ val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_NETWORK_STATE
 )
     get() = field.clone()
-
-
 class MainActivity : AppCompatActivity() {
     lateinit var myWebView: WebView
-
     @RequiresApi(Build.VERSION_CODES.M)
+    private var gpsBackground: GPSStamper? = null
+    val timeline = GPSTimelineManager.gpsTimeline
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        //test for service
+        startService(Intent(this, GatheringService()))
 
         myWebView = findViewById(R.id.webview)
         myWebView.webChromeClient = WebChromeClient()
@@ -51,6 +57,9 @@ class MainActivity : AppCompatActivity() {
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
 
+        gpsBackground = GPSStamper(this)
+
+        gpsBackground?.initializeLocationManager()
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -83,17 +92,13 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         //////for log
         println("requestCode : $requestCode")
         println()
-
         for(index: Int in 0..grantResults.size - 1)
             println(permissions[index] + " : " + if(grantResults[index] == 0) "허가됨" else "불허")
     }
 }
-
-
 private class MyWebViewClient : WebViewClient() {
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         if (view != null) {

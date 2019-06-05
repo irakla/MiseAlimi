@@ -15,11 +15,9 @@ class gps_list : AppCompatActivity() {
         setContentView(R.layout.activity_gps_list)
         gpsTimelineView.adapter = GPSStampAdapter(this, timeline)
         gpsBackground = GPSStamper(this)
-
         button.setOnClickListener {
             gpsTimelineView.adapter?.notifyDataSetChanged()
         }
-
         gpsBackground?.initializeLocationManager()
     }
 }
