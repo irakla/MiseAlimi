@@ -1,4 +1,4 @@
-package com.example.misealimi
+package com.example.myapplication
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -6,7 +6,10 @@ import android.database.sqlite.SQLiteOpenHelper
 
 //TODO : DB에서 삭제하는 기능 구현
 class TimelineDBHelper(context: Context)
-    : SQLiteOpenHelper(context, DB_NAME, null, DB_VER){
+    : SQLiteOpenHelper(context,
+    DB_NAME, null,
+    DB_VER
+){
     companion object{
         const val DB_VER = 1
         const val DB_NAME = "timeline.db"

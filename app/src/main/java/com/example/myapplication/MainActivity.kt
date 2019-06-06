@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
@@ -16,8 +16,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import android.webkit.WebChromeClient
-import com.example.misealimi.GPSStamper
-import com.example.misealimi.GPSTimelineManager
 
 const val PERMISSIONCODE_Essential: Int = 1000
 val permissionForEssential: Array<out String> = arrayOf(

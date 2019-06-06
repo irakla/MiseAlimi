@@ -1,8 +1,7 @@
-package com.example.misealimi
+package com.example.myapplication
 
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
-import com.example.myapplication.GPS_List
 import kotlinx.android.synthetic.main.activity_gps_list.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -24,7 +23,7 @@ class DownloaderForAirInfo(private val view_Main: AppCompatActivity)
         var conn: HttpURLConnection? = null
 
         try{
-            var url = URL("http://115.86.172.10:3000/finedust/"
+            val url = URL("http://115.86.172.10:3000/finedust/"
                     + "${params_TimeStamps[0].location.latitude}/${params_TimeStamps[0].location.longitude}")
 
             println("URL Setted by ${params_TimeStamps[0].location.latitude}, ${params_TimeStamps[0].location.longitude}")
@@ -50,7 +49,7 @@ class DownloaderForAirInfo(private val view_Main: AppCompatActivity)
         return airInfo
     }
 
-    private fun getAirInfoFromURL(conn: HttpURLConnection) : AirInfoType{
+    private fun getAirInfoFromURL(conn: HttpURLConnection) : AirInfoType {
         var nowAirInfo: AirInfoType
         val rawJSONBuffer = StringBuffer()
 

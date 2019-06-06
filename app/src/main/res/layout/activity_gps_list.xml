@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:bind="http://schemas.android.com/tools">
+        xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.databinding.ObservableArrayList"/>
-        <import type="com.example.misealimi.GPSTimeStamp" />
-        <variable name="timeline" type="ObservableArrayList&lt;GPSTimeStamp&gt;" />
+        <import type="com.example.myapplication.GPSTimeStamp" />
+        <variable name="timeline" type="com.example.myapplication.GPSTimeStamp" />
 
         <variable name="GPSStampAdapter"
-                  type="com.example.misealimi.GPSStampAdapter" />
+                  type="com.example.myapplication.GPSStampAdapter" />
     </data>
     <android.support.constraint.ConstraintLayout
             xmlns:tools="http://schemas.android.com/tools"

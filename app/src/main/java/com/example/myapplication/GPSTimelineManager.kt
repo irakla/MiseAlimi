@@ -1,17 +1,14 @@
-package com.example.misealimi
+package com.example.myapplication
 
 import android.databinding.ObservableArrayList
 import android.location.Location
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
-import com.example.myapplication.HOUR
-import com.example.myapplication.MINUTE
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 object GPSTimelineManager {
@@ -48,8 +45,8 @@ object GPSTimelineManager {
 
         val startIsPreviousDay = startHour > endHour
 
-        var theStartTime: Long;
-        var theEndTime: Long;
+        var theStartTime: Long
+        var theEndTime: Long
 
         //외출시작시간과 끝시간 구하기
         if(Build.VERSION.SDK_INT >= 26) {           //OS가 Oreo거나 Oreo보다 최신버전일때

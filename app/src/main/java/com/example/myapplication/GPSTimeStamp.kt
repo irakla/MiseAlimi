@@ -1,4 +1,4 @@
-package com.example.misealimi
+package com.example.myapplication
 
 import android.location.Location
 import android.os.Build

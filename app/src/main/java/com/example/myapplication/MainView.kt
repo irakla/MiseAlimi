@@ -33,7 +33,7 @@ class MainView : AppCompatActivity() {
         viewPager.adapter = pagerAdapter(supportFragmentManager, bundleFromLogin)
     }
 
-    inner class pagerAdapter(val fm: FragmentManager, val savedInstanceState: Bundle?) : FragmentPagerAdapter(fm) {
+    inner class pagerAdapter(fm: FragmentManager, val savedInstanceState: Bundle?) : FragmentPagerAdapter(fm) {
         override fun getCount(): Int {
             return fragments.size
         }

@@ -39,6 +39,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name="com.example.GatheringService"></service>
+        <service android:name=".GatheringService"/>
     </application>
 </manifest>

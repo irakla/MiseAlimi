@@ -37,7 +37,7 @@ object PermissionManager{
                     activity.finishActivity(0)
                     activity.finish()
                     System.runFinalization()
-                    android.os.Process.killProcess(android.os.Process.myPid() );
+                    android.os.Process.killProcess(android.os.Process.myPid() )
                 }
             })
 
