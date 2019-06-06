@@ -11,6 +11,7 @@ import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.example.inputTIme
 import kotlinx.android.synthetic.main.activity_mainview.*
 
 class mainview : AppCompatActivity() {
@@ -24,6 +25,7 @@ class mainview : AppCompatActivity() {
         viewList.add(layoutInflater.inflate(R.layout.fragment_text_info,null))
         viewList.add(air_infoView)*/
 
+        viewList.add(inputTIme())
         viewList.add(amount_info())
         viewList.add(text_info())
         viewList.add(air_info())
