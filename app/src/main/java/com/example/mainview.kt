@@ -7,8 +7,11 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.PagerAdapter
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import com.example.inputTIme
 import kotlinx.android.synthetic.main.activity_mainview.*
 
 class mainview : AppCompatActivity() {
@@ -17,6 +20,7 @@ class mainview : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mainview)
 
+        fragments.add(inputTIme())
         fragments.add(amount_info())
         fragments.add(text_info())
         fragments.add(air_info())
