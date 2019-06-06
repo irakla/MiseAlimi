@@ -49,10 +49,10 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
         println("Stamper initializing is finished.")
     }
 
-    fun stamp(){
+    fun stamp(): Location?{
         if(nowLocation == null){
             println("GPSStamper.stamp : Location is null")
-            return
+            return null
         }
 
         try {
@@ -60,6 +60,8 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
         }catch(e: Exception){
             println("catch in stamp... ${e.toString()}")
         }
+
+        return nowLocation
     }
 
     private fun saveToDB(newTimeStamp: GPSTimeStamp){

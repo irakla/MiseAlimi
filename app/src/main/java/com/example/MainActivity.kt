@@ -20,6 +20,7 @@ import android.webkit.WebChromeClient
 import com.example.misealimi.GPSStampAdapter
 import com.example.misealimi.GPSStamper
 import com.example.misealimi.GPSTimelineManager
+import com.example.misealimi.GatheringService
 import kotlinx.android.synthetic.main.activity_gps_list.*
 
 const val PERMISSIONCODE_Essential: Int = 1000
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         //test for service
-        startService(Intent(this, GatheringService()))
+        startService(Intent(this, GatheringService::class.))
 
         myWebView = findViewById(R.id.webview)
         myWebView.webChromeClient = WebChromeClient()
