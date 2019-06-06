@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         if (item.itemId == R.id.action_settings) {
-            val sign_up_page_move = Intent(this, preferences::class.java)
+            val sign_up_page_move = Intent(this, Preferences::class.java)
             startActivity(sign_up_page_move)
         }
         return super.onOptionsItemSelected(item)
