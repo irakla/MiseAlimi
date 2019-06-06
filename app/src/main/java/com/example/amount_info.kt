@@ -9,21 +9,32 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.myapplication.R
 import android.content.Intent
+import com.example.misealimi.GPSTimelineManager
 import com.example.myapplication.gps_list
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import kotlinx.android.synthetic.main.fragment_amount_info.*
 
 class amount_info : Fragment() {
+    var userName: String? = ""
+    var userAge: Int? = 0
+    var userWeight: Int? = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        println("amount_info 테스트")
+        userName = arguments?.getString("name", userName)
+        userAge = arguments?.getString("age", userAge.toString())?.toInt()
+        userWeight =  arguments?.getString("weight", userWeight.toString())?.toInt()
+
+        //inspiration.setText(userAge userWeight)
+
         return inflater.inflate(com.example.myapplication.R.layout.fragment_amount_info, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+
     }
 }
