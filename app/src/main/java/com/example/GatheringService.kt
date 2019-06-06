@@ -1,4 +1,4 @@
-package com.example.misealimi
+package com.example
 
 import android.app.Service
 import android.content.Intent
@@ -12,7 +12,6 @@ import java.util.*
 
 class GatheringService : Service() {
     private val INTERVAL: Long = 10 * 1000
-    //private long INTERVAL = 10*1000;
     private val mHandler: Handler = Handler()
     private var mTimer: Timer? = null
 

@@ -15,13 +15,9 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import android.support.v4.app.NavUtils
 import android.webkit.WebChromeClient
-import com.example.misealimi.GPSStampAdapter
 import com.example.misealimi.GPSStamper
 import com.example.misealimi.GPSTimelineManager
-import com.example.misealimi.GatheringService
-import kotlinx.android.synthetic.main.activity_gps_list.*
 
 const val PERMISSIONCODE_Essential: Int = 1000
 val permissionForEssential: Array<out String> = arrayOf(
@@ -42,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         //test for service
-        startService(Intent(this, GatheringService::class.))
+        //startService(Intent(this, GatheringService::class.java))
 
         myWebView = findViewById(R.id.webview)
         myWebView.webChromeClient = WebChromeClient()
