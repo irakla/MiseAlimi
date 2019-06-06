@@ -5,7 +5,7 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
                                              android:background="@color/mainbottom"
-                                             tools:context=".text_info" android:id="@+id/frameLayout3">
+                                             tools:context=".Text_Info" android:id="@+id/frameLayout3">
     <TextView
             android:textColor="#ffffff"
             android:textSize="25dp"

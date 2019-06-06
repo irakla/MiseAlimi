@@ -14,10 +14,10 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name=".gps_list">
+        <activity android:name=".GPS_List">
         </activity>
         <activity
-                android:name=".mainview"
+                android:name=".MainView"
                 android:label="@string/title_activity_mainview"
                 android:theme="@style/AppTheme.NoActionBar">
             

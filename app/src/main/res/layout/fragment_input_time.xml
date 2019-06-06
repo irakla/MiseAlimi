@@ -4,7 +4,7 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
                                              android:background="@color/mainbottom"
-                                             tools:context=".amount_info" android:id="@+id/frameLayout2">
+                                             tools:context=".Amount_Info" android:id="@+id/frameLayout2">
     
     <LinearLayout
             android:orientation="vertical"

@@ -11,14 +11,7 @@ import com.example.misealimi.GPSTimelineManager
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.fragment_air_info.*
 
-class air_info : Fragment() {
-    /*override fun n(): air_info{
-        val args = Bundle()
-
-        val frag = air_info()
-
-        return frag
-    }*/
+class Air_Info : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +24,7 @@ class air_info : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        print("airInfo 정상진행")
+
         if(GPSTimelineManager.gpsTimeline.isNotEmpty()){
             var pm10data = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("pm10Value")
             var pm25data = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("pm25Value")

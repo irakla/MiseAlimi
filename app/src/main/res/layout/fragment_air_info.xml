@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/mainbottom"
-        tools:context=".air_info" android:id="@+id/frameLayout"
+        tools:context=".Air_Info" android:id="@+id/frameLayout"
         android:name="airinfo">
     <TextView
             android:textColor="#ffffff"
@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView17" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/textView16"
+            android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/pm25"
             android:layout_marginTop="16dp"/>
     <TextView
             android:textSize="23dp"
@@ -52,20 +52,20 @@
             android:text="17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView18" app:layout_constraintStart_toEndOf="@+id/textView15"
+            android:id="@+id/textView18" app:layout_constraintStart_toEndOf="@+id/pm10"
             android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@+id/textView15"
-            app:layout_constraintBottom_toBottomOf="@+id/textView15"/>
+            app:layout_constraintTop_toTopOf="@+id/pm10"
+            app:layout_constraintBottom_toBottomOf="@+id/pm10"/>
     <TextView
             android:textSize="23dp"
             android:textColor="@color/yellow"
             android:text="20"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView19" app:layout_constraintStart_toEndOf="@+id/textView16"
+            android:id="@+id/textView19" app:layout_constraintStart_toEndOf="@+id/pm25"
             android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@+id/textView16"
-            app:layout_constraintBottom_toBottomOf="@+id/textView16"/>
+            app:layout_constraintTop_toTopOf="@+id/pm25"
+            app:layout_constraintBottom_toBottomOf="@+id/pm25"/>
     <TextView
             android:textSize="23dp"
             android:textColor="@color/red"

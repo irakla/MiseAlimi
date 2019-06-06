@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.myapplication.R
 
-class text_info : Fragment() {
+class Text_Info : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -109,7 +109,7 @@ class WebAppInterface(private val mContext: Context) {
     @JavascriptInterface
     fun showToast(hey:String, hi:String, hello:String) {
         Toast.makeText(mContext, hey, Toast.LENGTH_SHORT).show()
-        val intent = Intent(mContext, mainview::class.java)
+        val intent = Intent(mContext, MainView::class.java)
         intent.putExtra("name", hey)
         intent.putExtra("age", hi)
         intent.putExtra("weight", hello)

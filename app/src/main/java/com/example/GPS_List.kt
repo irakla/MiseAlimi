@@ -7,7 +7,7 @@ import com.example.misealimi.GPSStamper
 import com.example.misealimi.GPSTimelineManager
 import kotlinx.android.synthetic.main.activity_gps_list.*
 
-class gps_list : AppCompatActivity() {
+class GPS_List : AppCompatActivity() {
     private var gpsBackground: GPSStamper? = null
     val timeline = GPSTimelineManager.gpsTimeline
     override fun onCreate(savedInstanceState: Bundle?) {
