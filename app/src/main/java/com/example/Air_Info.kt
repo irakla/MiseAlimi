@@ -11,11 +11,11 @@ import com.example.misealimi.GPSTimelineManager
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.fragment_air_info.*
 
-class air_info : Fragment() {
-    /*override fun n(): air_info{
+class Air_Info : Fragment() {
+    /*override fun n(): Air_Info{
         val args = Bundle()
 
-        val frag = air_info()
+        val frag = Air_Info()
 
         return frag
     }*/

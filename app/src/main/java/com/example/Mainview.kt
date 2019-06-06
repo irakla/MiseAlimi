@@ -7,28 +7,26 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.PagerAdapter
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import com.example.inputTIme
+import com.example.InputTIme
 import kotlinx.android.synthetic.main.activity_mainview.*
 
-class mainview : AppCompatActivity() {
+class Mainview : AppCompatActivity() {
     var viewList = ArrayList<Fragment>()
     //var viewList = ArrayList<View>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mainview)
-        //val air_infoView = layoutInflater.inflate(air_info::class.java, null)
+        //val air_infoView = layoutInflater.inflate(Air_Info::class.java, null)
         /*viewList.add(layoutInflater.inflate(R.layout.fragment_amount_info,null))
         viewList.add(layoutInflater.inflate(R.layout.fragment_text_info,null))
         viewList.add(air_infoView)*/
 
-        viewList.add(inputTIme())
-        viewList.add(amount_info())
-        viewList.add(text_info())
-        viewList.add(air_info())
+        viewList.add(InputTIme())
+        viewList.add(Amount_Info())
+        viewList.add(Text_info())
+        viewList.add(Air_Info())
 
         val preference = getSharedPreferences("User", Context.MODE_PRIVATE)
         preference.edit().putString("name",intent.getStringExtra("name")).apply()
@@ -38,7 +36,7 @@ class mainview : AppCompatActivity() {
         viewPager.adapter = pagerAdapter(supportFragmentManager)
     }
     fun detail(view: View) {
-        val intent = Intent(this, gps_list::class.java)
+        val intent = Intent(this, GPS_List::class.java)
         startActivity(intent)
     }
     inner class pagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

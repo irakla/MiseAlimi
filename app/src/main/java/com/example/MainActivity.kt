@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         if (item.itemId == R.id.action_settings) {
-            val sign_up_page_move = Intent(this, preferences::class.java)
+            val sign_up_page_move = Intent(this, Preferences::class.java)
             startActivity(sign_up_page_move)
         }
         return super.onOptionsItemSelected(item)
@@ -109,7 +109,7 @@ class WebAppInterface(private val mContext: Context) {
     @JavascriptInterface
     fun showToast(hey:String, hi:String, hello:String) {
         Toast.makeText(mContext, hey, Toast.LENGTH_SHORT).show()
-        val intent = Intent(mContext, mainview::class.java)
+        val intent = Intent(mContext, Mainview::class.java)
         intent.putExtra("name", hey)
         intent.putExtra("age", hi)
         intent.putExtra("weight", hello)
