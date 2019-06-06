@@ -3,7 +3,6 @@
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-                                             android:background="@color/mainbottom"
                                              tools:context=".Amount_Info" android:id="@+id/frameLayout2">
     
     <LinearLayout
@@ -15,12 +14,12 @@
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
     >
         <TextView
-                android:text="나간 시간"
+                android:text="외출 시간"
                 android:textAlignment="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/timepickerLabel1"/>
         <TimePicker
-                android:id="@+id/out"
+                android:id="@+id/getOutTime"
                 android:layout_width="273dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
@@ -28,12 +27,12 @@
                 android:timePickerMode="spinner"
         />
         <TextView
-                android:text="들어온 시간"
+                android:text="귀가 시간"
                 android:textAlignment="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/timepickerLabel2"/>
         <TimePicker
-                android:id="@+id/in"
+                android:id="@+id/getInTime"
                 android:layout_width="273dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"

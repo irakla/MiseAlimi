@@ -1,12 +1,24 @@
 package com.example.myapplication
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.misealimi.GPSTimelineManager
+import kotlinx.android.synthetic.main.activity_gps_list.*
 import kotlinx.android.synthetic.main.fragment_amount_info.*
+import kotlinx.android.synthetic.main.fragment_input_time.view.*
+
+//for string-splitted time array
+const val HOUR = 0
+const val MINUTE = 1
+const val DefaultGetOutTime = "9:00"
+const val DefaultGetInTime = "18:00"
 
 class Amount_Info : Fragment() {
     private var userName: String? = ""
@@ -14,9 +26,8 @@ class Amount_Info : Fragment() {
     private var userWeight: Int? = 0
     private var userInspiRate: Int? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var getOutTime = DefaultGetOutTime.split(":")
+    private var getInTime = DefaultGetInTime.split(":")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +50,15 @@ class Amount_Info : Fragment() {
             }
         }
 
-        return inflater.inflate(com.example.myapplication.R.layout.fragment_amount_info, container, false)
+        val timePreference = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)
+        if(timePreference != null) {
+            getOutTime = timePreference.getString(getString(R.string.GetOutTime),
+                DefaultGetOutTime).split(":")
+            getInTime = timePreference.getString(getString(R.string.GetInTime),
+                DefaultGetInTime).split(":")
+        }
+
+        return inflater.inflate(R.layout.fragment_amount_info, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -51,13 +70,59 @@ class Amount_Info : Fragment() {
             }
         })
 
+        setOutsideTime()
+        buttonOutsideTime.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(v: View?) {
+                val builder = AlertDialog.Builder(activity)
+                val inflater = activity?.layoutInflater
+
+                if(inflater != null) {
+                    val outTimeView = InputTimeView(activity)
+                    builder.setView(outTimeView)
+
+                    builder.setPositiveButton("확인", object: DialogInterface.OnClickListener{
+                        override fun onClick(dialog: DialogInterface?, which: Int) {
+                            val getOutTimeString = "${outTimeView.getOutTime.hour}:${outTimeView.getOutTime.minute}"
+                            val getInTimeString = "${outTimeView.getInTime.hour}:${outTimeView.getInTime.minute}"
+                            getOutTime = getOutTimeString.split(":")
+                            getInTime = getInTimeString.split(":")
+
+                            val timePreferenceEditor = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)?.edit()
+                            timePreferenceEditor?.putString("GetOutTime", getOutTimeString)
+                            timePreferenceEditor?.putString("GetInTime", getInTimeString)
+                            timePreferenceEditor?.commit()
+
+                            setOutsideTime()
+                            setDustInspiration()
+                        }
+                    })
+                }
+
+                builder.show()
+            }
+        })
+
         if(userWeight == null || userInspiRate == null)
             return
 
         inspirationView.setText((7 * userWeight as Int * userInspiRate as Int).toString() + "mL")
     }
 
-    fun detailPerformed(view: View?) {
-        startActivity(null)
+    private fun setOutsideTime(){
+        var hourOnOut = getInTime[HOUR].toInt() - getOutTime[HOUR].toInt()
+        if(hourOnOut < 0)
+            hourOnOut += 24
+
+        var minuteOnOut = getInTime[MINUTE].toInt() - getOutTime[MINUTE].toInt()
+        if(minuteOnOut < 0)
+            minuteOnOut += 60
+
+        buttonOutsideTime.setText((if(hourOnOut != 0) hourOnOut.toString() + "시간"
+        else "") + minuteOnOut.toString() + "분간")
+    }
+
+    private fun setDustInspiration(){
+        GPSTimelineManager.getTimeStampsInTheTime(getOutTime[HOUR].toInt(), getOutTime[MINUTE].toInt(),
+            getInTime[HOUR].toInt(), getInTime[MINUTE].toInt())
     }
 }

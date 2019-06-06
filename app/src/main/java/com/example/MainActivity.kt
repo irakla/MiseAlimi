@@ -27,6 +27,9 @@ val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_NETWORK_STATE
 )
     get() = field.clone()
+
+
+
 class MainActivity : AppCompatActivity() {
     lateinit var myWebView: WebView
     @RequiresApi(Build.VERSION_CODES.M)

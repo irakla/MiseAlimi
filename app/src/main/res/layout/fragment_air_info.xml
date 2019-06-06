@@ -25,7 +25,7 @@
             android:text="미세먼지"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:id="@+id/pm10" app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/pm10Name" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/place"
             android:layout_marginTop="45dp"/>
     <TextView
@@ -34,8 +34,8 @@
             android:text="초미세먼지"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/pm25" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/pm10"
+            android:id="@+id/pm25Name" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/pm10Name"
             android:layout_marginTop="16dp"/>
     <TextView
             android:textColor="#ffffff"
@@ -43,8 +43,8 @@
             android:text="오존"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView17" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/pm25"
+            android:id="@+id/ozoneName" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/pm25Name"
             android:layout_marginTop="16dp"/>
     <TextView
             android:textSize="23dp"
@@ -52,37 +52,37 @@
             android:text="17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView18" app:layout_constraintStart_toEndOf="@+id/pm10"
+            android:id="@+id/pm10" app:layout_constraintStart_toEndOf="@+id/pm10Name"
             android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@+id/pm10"
-            app:layout_constraintBottom_toBottomOf="@+id/pm10"/>
+            app:layout_constraintTop_toTopOf="@+id/pm10Name"
+            app:layout_constraintBottom_toBottomOf="@+id/pm10Name"/>
     <TextView
             android:textSize="23dp"
             android:textColor="@color/yellow"
             android:text="20"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView19" app:layout_constraintStart_toEndOf="@+id/pm25"
+            android:id="@+id/pm25" app:layout_constraintStart_toEndOf="@+id/pm25Name"
             android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@+id/pm25"
-            app:layout_constraintBottom_toBottomOf="@+id/pm25"/>
+            app:layout_constraintTop_toTopOf="@+id/pm25Name"
+            app:layout_constraintBottom_toBottomOf="@+id/pm25Name"/>
     <TextView
             android:textSize="23dp"
             android:textColor="@color/red"
             android:text="0.12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView20" app:layout_constraintStart_toEndOf="@+id/textView17"
-            android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="@+id/textView17"
-            app:layout_constraintBottom_toBottomOf="@+id/textView17"/>
+            android:id="@+id/ozone" app:layout_constraintStart_toEndOf="@+id/ozoneName"
+            android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="@+id/ozoneName"
+            app:layout_constraintBottom_toBottomOf="@+id/ozoneName"/>
     <TextView
             android:textSize="23dp"
             android:textColor="#ffffff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView21" app:layout_constraintStart_toEndOf="@+id/textView18"
-            app:layout_constraintTop_toTopOf="@+id/textView18"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="@+id/textView18"
+            android:id="@+id/pm10Measure" app:layout_constraintStart_toEndOf="@+id/pm10"
+            app:layout_constraintTop_toTopOf="@+id/pm10"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="@+id/pm10"
             android:text="㎍/m³" app:layout_constraintVertical_bias="0.0"/>
     <TextView
             android:textSize="23dp"
@@ -90,15 +90,15 @@
             android:text="ppm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView22" app:layout_constraintStart_toEndOf="@+id/textView20"
-            app:layout_constraintTop_toTopOf="@+id/textView20"
-            app:layout_constraintBottom_toBottomOf="@+id/textView20"/>
+            android:id="@+id/pm25Measure" app:layout_constraintStart_toEndOf="@+id/pm25"
+            app:layout_constraintTop_toTopOf="@+id/pm25"
+            app:layout_constraintBottom_toBottomOf="@+id/pm25"/>
     <TextView
             android:textColor="#ffffff"
             android:textSize="23dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView23" app:layout_constraintStart_toEndOf="@+id/textView19"
-            android:text="㎍/m³" app:layout_constraintBottom_toBottomOf="@+id/textView19"
-            app:layout_constraintTop_toTopOf="@+id/textView19"/>
+            android:id="@+id/ozoneMeasure" app:layout_constraintStart_toEndOf="@+id/ozone"
+            android:text="㎍/m³" app:layout_constraintBottom_toBottomOf="@+id/ozone"
+            app:layout_constraintTop_toTopOf="@+id/ozone"/>
 </android.support.constraint.ConstraintLayout>
