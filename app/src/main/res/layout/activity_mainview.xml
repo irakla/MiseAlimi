@@ -21,7 +21,7 @@
             app:layout_constraintVertical_bias="1.0"/>
     <ImageView
             android:layout_width="239dp"
-            android:layout_height="214dp" app:srcCompat="@drawable/normal" android:id="@+id/imageView2"
+            android:layout_height="214dp" app:srcCompat="@drawable/normal" android:id="@+id/changeview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="4dp"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginEnd="8dp" android:layout_marginStart="8dp"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content" android:id="@+id/textView5"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="56dp"
             app:layout_constraintBottom_toTopOf="@+id/viewPager" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" app:layout_constraintVertical_bias="0.119"/>
+            app:layout_constraintTop_toBottomOf="@+id/changeview" app:layout_constraintVertical_bias="0.119"/>
     <TextView
             android:textColor="@color/textred"
             android:text="보통"
@@ -44,7 +44,7 @@
             app:layout_constraintStart_toEndOf="@+id/textView5"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintHorizontal_bias="0.0" app:layout_constraintBottom_toTopOf="@+id/viewPager"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/imageView2"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/changeview"
             app:layout_constraintVertical_bias="0.119" android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"/>
 </android.support.constraint.ConstraintLayout>

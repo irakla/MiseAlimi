@@ -33,6 +33,44 @@ class MainView : AppCompatActivity() {
         viewPager.adapter = pagerAdapter(supportFragmentManager, bundleFromLogin)
     }
 
+    override fun onResume(){
+        super.onResume()
+
+        setNowAirState()
+    }
+
+    fun setNowAirState(){
+        if(GPSTimelineManager.gpsTimeline.size > 0) {
+            var pm10data = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("pm10Value")
+            var pm25data = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("pm25Value")
+
+            //key값의 키워드 정보가 잘 제공되어 쓸 수 있는지 확인할 수 있는 HashMap
+            var isPossibleInfos: HashMap<String, Boolean> = HashMap<String, Boolean>()
+            isPossibleInfos.set("pm10Value", pm10data != "-")
+            isPossibleInfos.set("pm25Value", pm25data != "-")
+
+            if(isPossibleInfos.getValue("pm10Value")){
+                var ppm10data: Int = if (pm10data != null) pm10data?.toInt() as Int else 0
+
+                changeview.setImageResource(
+                    when (ppm10data) {
+                        in 1..30 -> R.drawable.verygood
+                        in 31..80 -> R.drawable.normal
+                        in 81..150 -> R.drawable.bad
+                        else -> R.drawable.verybad
+                    }
+                )
+            }
+            else{
+                //pm10Value 값을 정상적으로 받지 못했을 때
+            }
+
+            if(isPossibleInfos.getValue("pm25Value")){
+                var ppm25data: Int = if (pm25data != null) pm25data?.toInt() as Int else 0
+            }
+        }
+    }
+
     inner class pagerAdapter(fm: FragmentManager, val savedInstanceState: Bundle?) : FragmentPagerAdapter(fm) {
         override fun getCount(): Int {
             return fragments.size
