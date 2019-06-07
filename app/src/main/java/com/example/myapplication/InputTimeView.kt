@@ -19,8 +19,8 @@ class InputTimeView(context: Context?) : ConstraintLayout(context) {
 
         val preference = context.getSharedPreferences("Time", Context.MODE_PRIVATE)
         if(preference != null) {
-            val savedGetOutTime = preference.getString("GetOutTime", "9:00").split(":")
-            val savedGetInTime = preference.getString("GetInTime", "18:00").split(":")
+            val savedGetOutTime = preference.getString("GetOutTime", DefaultGetOutTime).split(":")
+            val savedGetInTime = preference.getString("GetInTime", DefaultGetInTime).split(":")
 
             getOutTime.hour = savedGetOutTime[0].toInt()
             getOutTime.minute = savedGetOutTime[1].toInt()

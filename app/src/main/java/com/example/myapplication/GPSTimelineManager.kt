@@ -35,42 +35,60 @@ object GPSTimelineManager {
         dbCursor.close()
     }
 
+    /*
+    * 가장 최근의 parameter시간 범위 GPSTimeStamp리스트를 제공
+    *
+    * @parameter 구하고자 하는 시간 범위
+    * @return parameter시간 범위(in the time)의 GPSTimeStamp리스트            [index] in 1..(size - 1)
+    * + parameter시간 범위 직전 timestamp(없으면 null)                        nextLast
+    * 
+    * 해당하는 시간 범위의 timestamp 없으면 emptylist
+     */
     fun getTimeStampsInTheTime(
         startHour: Int,
         startMinute: Int,
         endHour: Int,
         endMinute: Int
-    ) : List<GPSTimeStamp>{
-        val timeStampsInTheTime = mutableListOf<GPSTimeStamp>()
+    ) : List<GPSTimeStamp?> {
+        //parameter validity check
+        if (!(startHour in 0 until 24)
+            || !(endHour in 0 until 24)
+            || !(startMinute in 0 until 60)
+            || !(endMinute in 0 until 60)
+        )
+            return emptyList()
 
+        val timeStampsInTheTime = mutableListOf<GPSTimeStamp?>()
         val startIsPreviousDay = startHour > endHour
 
         var theStartTime: Long
         var theEndTime: Long
 
-        //외출시작시간과 끝시간 구하기
-        if(Build.VERSION.SDK_INT >= 26) {           //OS가 Oreo거나 Oreo보다 최신버전일때
-            var startzdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()), ZoneId.of("Asia/Seoul"))
-            startzdt = startzdt.minusDays(if(startIsPreviousDay) 1 else 0)
+        //시작시간과 끝시간 구하기
+        if (Build.VERSION.SDK_INT >= 26) {           //OS가 Oreo거나 Oreo보다 최신버전일때
+            var startzdt =
+                ZonedDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()), ZoneId.of("Asia/Seoul"))
+            startzdt = startzdt.minusDays(if (startIsPreviousDay) 1 else 0)
             startzdt = startzdt.withHour(startHour)
             startzdt = startzdt.withMinute(startMinute)
             startzdt = startzdt.withSecond(0)
             theStartTime = startzdt.toEpochSecond() * 1000
 
-            var endzdt = startzdt.plusDays(if(startIsPreviousDay) 1 else 0)
+            var endzdt = startzdt.plusDays(if (startIsPreviousDay) 1 else 0)
             endzdt = endzdt.withHour(endHour)
             endzdt = endzdt.withMinute(endMinute)
             endzdt = endzdt.withSecond(0)
             theEndTime = endzdt.toEpochSecond() * 1000
-        }
-        else {
+        } else {
             //하위버전에서 정상작동하지 않음.
             val OneDay = "02"
             val ZeroDay = "01"
 
-            var startTimeString = SimpleDateFormat("yyyy-MM-dd ").
-                format(Date(System.currentTimeMillis() - SimpleDateFormat("dd").
-                    parse(if(startIsPreviousDay) OneDay else ZeroDay).time))
+            var startTimeString = SimpleDateFormat("yyyy-MM-dd ").format(
+                Date(
+                    System.currentTimeMillis() - SimpleDateFormat("dd").parse(if (startIsPreviousDay) OneDay else ZeroDay).time
+                )
+            )
 
             startTimeString = startTimeString + String.format(" %2d:%2d:00", startHour, startMinute)
             theStartTime = SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(startTimeString).time
@@ -79,12 +97,36 @@ object GPSTimelineManager {
             endTimeString = endTimeString + String.format(" %2d:%2d:00", endHour, endMinute)
             theEndTime = SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(endTimeString).time
         }
-        //외출시작시간과 끝시간 구하기
+        //시작시간과 끝시간 구하기
 
-        gpsTimeline.forEach {
-            if(theStartTime <= it.location.time && theEndTime >= it.location.time)
-                timeStampsInTheTime.add(it)
-        }
+        //범위 내 시간에 기록된 timestamp 저장
+        var indexFirstInTheTime: Int? = null
+        for((nowIndex, nowTimeStamp) in gpsTimeline.withIndex())
+            if(nowTimeStamp.location.time <= theEndTime) {                     //find first in parameter time
+                indexFirstInTheTime = nowIndex
+                break
+            }
+
+        if(indexFirstInTheTime == null)
+            return emptyList()
+
+        println("시간 범위 체크 시작")
+        var indexNextLast: Int? = null
+        for(nowIndex in indexFirstInTheTime until gpsTimeline.size)
+            if (gpsTimeline[nowIndex].location.time >= theStartTime)
+                timeStampsInTheTime.add(gpsTimeline[nowIndex])
+            else {
+                indexNextLast = nowIndex
+                break
+            }
+        //범위 내 시간에 기록된 timestamp 저장
+
+        timeStampsInTheTime.add(                //nextLast 추가
+            if(indexNextLast != null)
+                gpsTimeline[indexNextLast]
+            else                                //the found was last on gpsTimeline, so next is not exist
+                null
+        )
 
         return timeStampsInTheTime
     }

@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat
 
 object PermissionManager{
 
-
     fun isExist_deniedPermission(context: Context, permissions: Array<out String>) : Boolean
             = deniedPermListOf(context, permissions).isNotEmpty()
 

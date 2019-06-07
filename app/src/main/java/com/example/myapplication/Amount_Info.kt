@@ -120,7 +120,38 @@ class Amount_Info : Fragment() {
     }
 
     private fun setDustInspiration(){
+        if(userWeight == null || userInspiRate == null)
+            return
+
+        var tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
+
+        var prevMilliTime: Long? = null
+        var prevAirInfo: AirInfoType? = null
+        var finedustByInspiration: Double = 0.0
         GPSTimelineManager.getTimeStampsInTheTime(getOutTime[HOUR].toInt(), getOutTime[MINUTE].toInt(),
-            getInTime[HOUR].toInt(), getInTime[MINUTE].toInt())
+            getInTime[HOUR].toInt(), getInTime[MINUTE].toInt()).reversed().forEach {
+
+            if(it == null || prevAirInfo == it.airInfo == null)
+                return@forEach
+
+            if(prevMilliTime == null){
+                prevMilliTime = it.location.time
+                prevAirInfo = it.airInfo
+                return@forEach
+            }
+
+
+            var inspirationTimeMinute = (it.location.time - prevMilliTime as Long) / 60000.toDouble()
+
+            var inspirationVolume_mL = inspirationTimeMinute * tidalVolumePerMinute_mL
+
+            if(prevAirInfo != null) {
+                val pm10 = prevAirInfo?.getString(context?.getString(R.string.PM10))?.toInt()
+                finedustByInspiration += inspirationVolume_mL * if(pm10 != null) pm10 else 0
+            }
+        }
+
+        finedustByInspiration /= 1000000000                                         //mL 보정
+        inspirationView.setText(String.format("%,.2fμg", finedustByInspiration))
     }
 }
