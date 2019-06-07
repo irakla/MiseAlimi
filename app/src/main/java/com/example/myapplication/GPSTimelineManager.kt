@@ -28,7 +28,8 @@ object GPSTimelineManager {
                 location.latitude = dbCursor.getDouble(dbCursor.getColumnIndex("latitude"))
                 location.longitude = dbCursor.getDouble(dbCursor.getColumnIndex("longitude"))
 
-                val airInfo: AirInfoType = JSONObject(dbCursor.getString(dbCursor.getColumnIndex("airJSON")))
+                val serializedJSON = dbCursor.getString(dbCursor.getColumnIndex("airJSON"))
+                val airInfo: AirInfoType = if(serializedJSON == null) null else JSONObject(serializedJSON)
 
                 GPSTimeStamp(view_Main, location, airInfo)
             }while(dbCursor.moveToNext())
