@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.view.LayoutInflater
-import com.example.myapplication.R
 import kotlinx.android.synthetic.main.fragment_input_time.view.*
 
 class InputTimeView(context: Context?) : ConstraintLayout(context) {
@@ -22,10 +21,10 @@ class InputTimeView(context: Context?) : ConstraintLayout(context) {
             val savedGetOutTime = preference.getString("GetOutTime", DefaultGetOutTime).split(":")
             val savedGetInTime = preference.getString("GetInTime", DefaultGetInTime).split(":")
 
-            getOutTime.hour = savedGetOutTime[0].toInt()
-            getOutTime.minute = savedGetOutTime[1].toInt()
-            getInTime.hour = savedGetInTime[0].toInt()
-            getInTime.minute = savedGetInTime[1].toInt()
+            getOutTime.hour = savedGetOutTime[HOUR].toInt()
+            getOutTime.minute = savedGetOutTime[MINUTE].toInt()
+            getInTime.hour = savedGetInTime[HOUR].toInt()
+            getInTime.minute = savedGetInTime[MINUTE].toInt()
         }
     }
 }
