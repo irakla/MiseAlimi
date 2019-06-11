@@ -19,6 +19,8 @@ const val MINUTE = 1
 const val DefaultGetOutTime = "9:00"
 const val DefaultGetInTime = "18:00"
 
+var finedustByInspirationNow: Double = 0.0
+
 class Amount_Info : Fragment() {
     private var userName: String? = ""
     private var userAge: Int? = 0
@@ -104,7 +106,7 @@ class Amount_Info : Fragment() {
         if(userWeight == null || userInspiRate == null)
             return
 
-        inspirationView.setText((7 * userWeight as Int * userInspiRate as Int).toString() + "mL")
+        setDustInspiration()
     }
 
     private fun setOutsideTime(){
@@ -215,5 +217,6 @@ class Amount_Info : Fragment() {
 
         finedustByInspiration /= 1000000                                         //mL 보정
         inspirationView.setText(String.format("%,.2fμg", finedustByInspiration))
+        finedustByInspirationNow = finedustByInspiration
     }
 }
