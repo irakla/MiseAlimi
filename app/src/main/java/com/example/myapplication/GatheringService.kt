@@ -9,6 +9,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.SystemClock
 import android.support.v4.app.NotificationCompat
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -124,7 +125,7 @@ class GatheringService : Service(){
         builder.setContentIntent(pendingIntent)
 
 
-        startForeground(1, builder.build())
+        startForeground(100, builder.build())
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -140,5 +141,17 @@ class GatheringService : Service(){
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        val restartServiceTask = Intent(getApplicationContext(), GatheringService.javaClass);
+        restartServiceTask.setPackage(packageName);
+        val restartPendingIntent = PendingIntent.getService(applicationContext, 1, restartServiceTask, PendingIntent.FLAG_ONE_SHOT);
+        val myAlarmService = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        myAlarmService.set(
+            AlarmManager.ELAPSED_REALTIME,
+            SystemClock.elapsedRealtime() + 1000,
+            restartPendingIntent);
+        super.onTaskRemoved(rootIntent)
     }
 }
