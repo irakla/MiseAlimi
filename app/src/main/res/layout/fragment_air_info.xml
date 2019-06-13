@@ -87,7 +87,7 @@
     <TextView
             android:textSize="23dp"
             android:textColor="#ffffff"
-            android:text="ppm"
+            android:text="㎍/m³"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/pm25Measure" app:layout_constraintStart_toEndOf="@+id/pm25"
