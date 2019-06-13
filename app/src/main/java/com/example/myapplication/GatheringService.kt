@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.app.*
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -21,6 +22,22 @@ class GatheringService : Service(){
     private var mTimer: Timer? = null
 
     companion object{
+        class BootReceiver : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if(Intent.ACTION_BOOT_COMPLETED.equals(intent.action)) {
+                    var serviceIntent = Intent(context, GatheringService:: class.java)
+
+                    if(Build.VERSION.SDK_INT >= 26)
+                        context.startForegroundService(serviceIntent)
+                    else
+                        context.startService(serviceIntent)
+                }
+            }
+        }
+
+        var isRunning = false
+            private set(stateIsRunning) { field = stateIsRunning }
+
         val nameUsingPreference = "StampPeriod"
     }
 
@@ -34,7 +51,6 @@ class GatheringService : Service(){
         // schedule task
 
 
-
         stamperInBackground = GPSStamper(this)
 
         val preference = applicationContext.getSharedPreferences(nameUsingPreference, Context.MODE_PRIVATE)
@@ -46,7 +62,7 @@ class GatheringService : Service(){
             if(passedTimeFromLastLocation < periodSetted_LocationRefresh)
                 periodSetted_LocationRefresh - passedTimeFromLastLocation
             else
-                periodSetted_LocationRefresh
+                0
         , periodSetted_LocationRefresh
         )
 
@@ -117,11 +133,12 @@ class GatheringService : Service(){
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        isRunning = true
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
+        isRunning = false
     }
 }

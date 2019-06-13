@@ -1,10 +1,7 @@
 package com.example.myapplication
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -28,7 +25,8 @@ val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION,
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.INTERNET,
-    Manifest.permission.ACCESS_NETWORK_STATE
+    Manifest.permission.ACCESS_NETWORK_STATE,
+    Manifest.permission.RECEIVE_BOOT_COMPLETED
 )
     get() = field.clone()
 
@@ -64,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         //gpsBackground?.start_GetLocation()
 
         //test for service
-        startService(Intent(this, GatheringService::class.java))
+        if(!GatheringService.isRunning)
+            startService(Intent(this, GatheringService::class.java))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
