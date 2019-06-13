@@ -22,8 +22,9 @@ class GPSStamper(private val context : Context) : LocationListener{
             Manifest.permission.INTERNET
         )
 
-        var min_PeriodLocationRefresh:Long = 30
+        var min_PeriodLocationRefresh:Long = 20
         var meter_MinimalDistanceFromPrev:Float = 200.toFloat()
+        val prevStampTime = "StampTime"
     }
 
     init{
@@ -58,6 +59,10 @@ class GPSStamper(private val context : Context) : LocationListener{
         }catch(e: Exception){
             println("catch in stamp... ${e.toString()}")
         }
+
+        val stampTimePreference = context.getSharedPreferences(GatheringService.nameUsingPreference, Context.MODE_PRIVATE)
+        val stampTimeEditor = stampTimePreference.edit()
+        stampTimeEditor.putLong(prevStampTime, System.currentTimeMillis())
 
         if(context is GatheringService)
             stop_GetLocation()

@@ -20,6 +20,10 @@ class GatheringService : Service(){
     private val mHandler: Handler = Handler()
     private var mTimer: Timer? = null
 
+    companion object{
+        val nameUsingPreference = "StampPeriod"
+    }
+
     override fun onCreate() {
         if (mTimer != null) {
             mTimer?.cancel()
@@ -29,9 +33,23 @@ class GatheringService : Service(){
         }
         // schedule task
 
+
+
         stamperInBackground = GPSStamper(this)
 
-        mTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(), 0, GPSStamper.min_PeriodLocationRefresh * 60000)
+        val preference = applicationContext.getSharedPreferences(nameUsingPreference, Context.MODE_PRIVATE)
+        val prevTime_GetLocation = preference.getLong(GPSStamper.prevStampTime, 0)
+        val passedTimeFromLastLocation = System.currentTimeMillis() - prevTime_GetLocation
+        val periodSetted_LocationRefresh = GPSStamper.min_PeriodLocationRefresh * 60000
+
+        mTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(),
+            if(passedTimeFromLastLocation < periodSetted_LocationRefresh)
+                periodSetted_LocationRefresh - passedTimeFromLastLocation
+            else
+                periodSetted_LocationRefresh
+        , periodSetted_LocationRefresh
+        )
+
         startInForeground()
     }
 
@@ -96,5 +114,14 @@ class GatheringService : Service(){
     override fun onBind(intent: Intent?): IBinder? {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         return null
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
     }
 }
