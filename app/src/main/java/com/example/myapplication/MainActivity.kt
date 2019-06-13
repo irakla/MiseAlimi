@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity() {
 
         gpsBackground?.initializeLocationManager()
 
-
         //test for service
         //startService(Intent(this, GatheringService::class.java))
     }

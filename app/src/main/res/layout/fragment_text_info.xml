@@ -6,16 +6,79 @@
                                              android:layout_height="match_parent"
                                              android:background="@color/mainbottom"
                                              tools:context=".Text_Info" android:id="@+id/frameLayout3">
-    <TextView
-            android:textColor="#ffffff"
-            android:textSize="25dp"
-            android:text="(수치)"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView10"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="50dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="50dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.194"
-            app:layout_constraintHorizontal_bias="0.5"/>
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="30dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="30dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="30dp"
+            android:layout_marginEnd="30dp" app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintVertical_bias="0.0">
+        
+        <TextView
+                android:textSize="20dp"
+                android:textColor="#ffffff"
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView7"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp"
+                app:layout_constraintHorizontal_bias="0.034" app:layout_constraintTop_toBottomOf="@+id/textView11"
+                android:layout_marginTop="20dp"/>
+        <TextView
+                android:textColor="#ffffff"
+                android:textSize="23dp"
+                android:text="(수치)"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView10"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="8dp"/>
+        <TextView
+                android:textSize="20dp"
+                android:textColor="#ffffff"
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView9"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.031"
+                android:layout_marginTop="10dp" app:layout_constraintTop_toBottomOf="@+id/textView12"/>
+        <TextView
+                android:textColor="#ffffff"
+                android:textSize="20dp"
+                android:text="마스크 착용시 차단할 수 있는 미세먼지 양"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView11" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintTop_toBottomOf="@+id/textView10"
+                android:layout_marginTop="25dp"/>
+        <TextView
+                android:textSize="15dp"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView12"
+                app:layout_constraintTop_toBottomOf="@+id/textView7" app:layout_constraintEnd_toEndOf="@+id/textView7"
+                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="@+id/textView7"
+                android:layout_marginTop="4dp"/>
+        <TextView
+                android:textSize="15dp"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView13"
+                app:layout_constraintTop_toBottomOf="@+id/textView9"
+                app:layout_constraintStart_toStartOf="@+id/textView9"
+                app:layout_constraintEnd_toEndOf="@+id/textView9" android:layout_marginTop="4dp"/>
+    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

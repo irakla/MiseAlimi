@@ -24,11 +24,13 @@ class Air_Info : Fragment() {
         if(GPSTimelineManager.gpsTimeline.isNotEmpty()){
             var pm10data = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("pm10Value")
             var pm25data = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("pm25Value")
+            var ozonedata = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("o3Value")
             var placeinfo = GPSTimelineManager.gpsTimeline[0].airInfo?.getString("name")
             placeinfo += " " + GPSTimelineManager.gpsTimeline[0].airInfo?.getString("dataTime")
             place.setText(placeinfo)
             pm10.setText(pm10data)
             pm25.setText(pm25data)
+            ozone.setText(ozonedata)
         }
 
     }

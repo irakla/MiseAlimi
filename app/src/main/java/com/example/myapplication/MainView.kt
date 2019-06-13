@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.view.textservice.TextInfo
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_mainview.*
 
@@ -16,8 +17,11 @@ class MainView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mainview)
 
-        fragments.add(Amount_Info())
-        fragments.add(Text_Info())
+        val view_AmountInfo = Amount_Info()
+        val view_TextInfo = Text_Info()
+        fragments.add(view_AmountInfo)
+        fragments.add(view_TextInfo)
+        view_AmountInfo.addInspirationObserver(view_TextInfo)
         fragments.add(Air_Info())
 
         val preference = getSharedPreferences("User", Context.MODE_PRIVATE)

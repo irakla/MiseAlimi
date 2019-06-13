@@ -51,7 +51,6 @@ class GatheringService : Service(), LocationListener {
                         Toast.LENGTH_SHORT
                     ).show()
 
-
                 }
             })
         }

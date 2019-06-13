@@ -19,8 +19,6 @@ const val MINUTE = 1
 const val DefaultGetOutTime = "9:00"
 const val DefaultGetInTime = "18:00"
 
-var finedustByInspirationNow: Double = 0.0
-
 class Amount_Info : Fragment() {
     private var userName: String? = ""
     private var userAge: Int? = 0
@@ -29,6 +27,9 @@ class Amount_Info : Fragment() {
 
     private var getOutTime = DefaultGetOutTime.split(":")
     private var getInTime = DefaultGetInTime.split(":")
+
+    private var finedustByInspiration: Double = 0.0
+    private val observersForInspiration: MutableList<Observer> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +59,8 @@ class Amount_Info : Fragment() {
             getInTime = timePreference.getString(getString(R.string.GetInTime),
                 DefaultGetInTime).split(":")
         }
+
+        println("amount의 viewgroup : ${container})")
 
         return inflater.inflate(R.layout.fragment_amount_info, container, false)
     }
@@ -156,7 +159,6 @@ class Amount_Info : Fragment() {
         var tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
         var prevMilliTime: Long? = null
         var prevAirInfo: AirInfoType? = null
-        var finedustByInspiration: Double = 0.0
 
         var inspirationTimeByMinute : Double = 0.0
         var inspirationVolume_mL : Double = 0.0
@@ -218,6 +220,17 @@ class Amount_Info : Fragment() {
 
         finedustByInspiration /= 1000000                                         //mL 보정
         inspirationView.setText(String.format("%,.2fμg", finedustByInspiration))
-        finedustByInspirationNow = finedustByInspiration
+
+        observersForInspiration.forEach{ it.update(finedustByInspiration) }
+    }
+
+    fun addInspirationObserver(observer: Observer){
+        if(!observersForInspiration.contains(observer))
+            observersForInspiration.add(observer)
+    }
+
+    fun delInspirationObserver(observer: Observer){
+        if(observersForInspiration.contains(observer))
+            observersForInspiration.remove(observer)
     }
 }
