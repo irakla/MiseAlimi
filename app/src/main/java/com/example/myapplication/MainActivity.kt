@@ -1,6 +1,10 @@
 package com.example.myapplication
 
 import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,12 +14,14 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import android.os.Build
 import android.support.annotation.RequiresApi
+import android.support.v4.app.NotificationCompat
 import android.view.KeyEvent
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import android.webkit.WebChromeClient
+import android.widget.RemoteViews
 
 const val PERMISSIONCODE_Essential: Int = 1000
 val permissionForEssential: Array<out String> = arrayOf(
@@ -52,14 +58,15 @@ class MainActivity : AppCompatActivity() {
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
 
-        gpsBackground = GPSStamper(this)
+        //gpsBackground = GPSStamper(this)
         GPSTimelineManager.initializeTimeline(this)
 
-        gpsBackground?.initializeLocationManager()
+        //gpsBackground?.start_GetLocation()
 
         //test for service
-        //startService(Intent(this, GatheringService::class.java))
+        startService(Intent(this, GatheringService::class.java))
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)

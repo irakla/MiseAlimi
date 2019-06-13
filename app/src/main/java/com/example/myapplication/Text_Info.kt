@@ -26,14 +26,10 @@ class Text_Info : Fragment(), Observer {
         return inflater.inflate(R.layout.fragment_text_info, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        setContent()
-    }
-
     override fun onResume() {
         super.onResume()
         isShowing = true
+        setContent()
     }
 
     override fun onPause(){
@@ -41,7 +37,7 @@ class Text_Info : Fragment(), Observer {
         isShowing = false
     }
 
-    fun setContent(){
+    private fun setContent(){
 
         // 담배
         var ciga: Double = 0.0

@@ -10,8 +10,9 @@ class GPS_List : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gps_list)
-        gpsTimelineView.adapter = GPSStampAdapter(this, timeline)
-        gpsBackground = GPSStamper(this)
-        gpsBackground?.initializeLocationManager()
+        gpsTimelineView.adapter = GPSStampAdapter(this, timeline, gpsTimelineView)
+        gpsTimelineView.scrollToPosition(0)
+        //gpsBackground = GPSStamper(this)
+        //gpsBackground?.start_GetLocation()
     }
 }

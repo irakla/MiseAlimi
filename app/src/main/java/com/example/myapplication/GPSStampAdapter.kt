@@ -4,18 +4,19 @@ import android.databinding.*
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 
-class
-GPSStampAdapter(
-    private val view_Main: AppCompatActivity,
-    private var timelineDataset: ObservableArrayList<GPSTimeStamp>)
+class GPSStampAdapter(
+    private val activity: AppCompatActivity,
+    private var timelineDataset: ObservableArrayList<GPSTimeStamp>,
+    private val viewShowing: ViewGroup)
     : RecyclerView.Adapter<GPSTimeStampViewHolder>()
     {
 
-    init{
-        timelineDataset.addOnListChangedCallback(object:
+    init {
+        timelineDataset.addOnListChangedCallback(object :
             ObservableList.OnListChangedCallback<ObservableArrayList<GPSTimeStamp>>() {
             override fun onItemRangeRemoved(
                 sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
@@ -28,13 +29,22 @@ GPSStampAdapter(
 
             override fun onItemRangeInserted(
                 sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
-            ) = notifyItemRangeInserted(positionStart, itemCount)
+            ) {
+                val scrollOnListViewIsTop = !viewShowing.canScrollVertically(-1)
+                println("스크롤은 맨위에 : ${scrollOnListViewIsTop}")
+
+                notifyItemRangeInserted(positionStart, itemCount)
+
+                if(viewShowing is RecyclerView && scrollOnListViewIsTop)
+                    viewShowing.scrollToPosition(0)
+            }
 
             override fun onItemRangeChanged(
                 sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
             ) = notifyItemRangeChanged(positionStart, itemCount)
 
-            override fun onChanged(sender: ObservableArrayList<GPSTimeStamp>?
+            override fun onChanged(
+                sender: ObservableArrayList<GPSTimeStamp>?
             ) = notifyDataSetChanged()
         })
     }
@@ -57,6 +67,5 @@ GPSStampAdapter(
         holder.airInfoView.setText("측정정보 : ${nowTimeStamp.airInfo?.getString("dataTime")} \n"
             + nowTimeStamp.airInfo?.getString("pm10Value") + "ppm")
 
-        val dong = nowTimeStamp.airInfo?.getString("name")
     }
 }

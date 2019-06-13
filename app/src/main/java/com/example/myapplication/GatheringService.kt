@@ -1,29 +1,24 @@
 package com.example.myapplication
 
-import android.Manifest
-import android.app.Service
+import android.app.*
+import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.media.RingtoneManager
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
-import android.R.string.cancel
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import android.support.v4.app.NotificationCompat
+import android.widget.RemoteViews
 import android.widget.Toast
-import com.example.myapplication.GPSStamper.Companion.meter_MinimalDistanceFromPrev
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class GatheringService : Service(), LocationListener {
+class GatheringService : Service(){
     private var stamperInBackground: GPSStamper? = null
-    private val INTERVAL: Long = 10 * 1000
     private val mHandler: Handler = Handler()
     private var mTimer: Timer? = null
-    private val lm : LocationManager? = null
 
     override fun onCreate() {
         if (mTimer != null) {
@@ -33,10 +28,11 @@ class GatheringService : Service(), LocationListener {
             mTimer = Timer()
         }
         // schedule task
-        mTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(), 0, INTERVAL)
 
         stamperInBackground = GPSStamper(this)
-        stamperInBackground?.initializeLocationManager()
+
+        mTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(), 0, GPSStamper.min_PeriodLocationRefresh * 60000)
+        startInForeground()
     }
 
     inner class TimeDisplayTimerTask: TimerTask() {
@@ -47,10 +43,11 @@ class GatheringService : Service(), LocationListener {
                 override fun run() {
                     // display toast
                     Toast.makeText(
-                        getApplicationContext(), getDateTime(),
+                        applicationContext, "위치수집 : " + getDateTime(),
                         Toast.LENGTH_SHORT
                     ).show()
 
+                    stamperInBackground?.start_GetLocation()
                 }
             })
         }
@@ -62,24 +59,42 @@ class GatheringService : Service(), LocationListener {
         }
     }
 
+    private fun startInForeground(){
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
+        val remoteViews = RemoteViews(packageName, R.layout.view_foreground_notification)
+
+        var builder: NotificationCompat.Builder
+        if(Build.VERSION.SDK_INT >= 26){
+            val channel_id = "timeline_gathering_channel"
+            val channel = NotificationChannel(channel_id, "Timeline Gathering Channel",
+                NotificationManager.IMPORTANCE_DEFAULT)
+
+
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).
+                createNotificationChannel(channel)
+
+            builder = NotificationCompat.Builder(this, channel_id)
+        }
+        else
+            builder = NotificationCompat.Builder(this)
+
+        builder.setSmallIcon(R.drawable.verygood)
+        builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.verygood))
+        builder.setBadgeIconType(R.drawable.verygood)
+        builder.setContentTitle("MiseAlimi")
+        builder.setContentText("${GPSStamper.min_PeriodLocationRefresh}분마다 위치정보를 수집합니다.")
+        builder.setDefaults(Notification.DEFAULT_VIBRATE)
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+        //builder.setContent(remoteViews)
+        builder.setContentIntent(pendingIntent)
+
+
+        startForeground(1, builder.build())
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         return null
     }
-
-
-    override fun onLocationChanged(location: Location?) {
-        /*location ?: return
-        if(nowLocation?.time == location?.time)
-            return
-
-        nowLocation = location
-        println("Location : ${location?.provider}")
-        stamp()
-        println("Misealimiback : Location has changed.")*/
-    }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {    }
-    override fun onProviderEnabled(provider: String?) {    }
-    override fun onProviderDisabled(provider: String?) {    }
 }

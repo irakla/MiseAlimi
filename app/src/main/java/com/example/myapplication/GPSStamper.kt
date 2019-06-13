@@ -8,10 +8,9 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import java.lang.Exception
 
-class GPSStamper(private val view_Main : Context) : LocationListener{
+class GPSStamper(private val context : Context) : LocationListener{
     private val lm : LocationManager
     val gpsTimeline = GPSTimelineManager.gpsTimeline
     private var nowLocation : Location? = null
@@ -23,27 +22,27 @@ class GPSStamper(private val view_Main : Context) : LocationListener{
             Manifest.permission.INTERNET
         )
 
-        var min_PeriodLocationRefresh:Long = 10
+        var min_PeriodLocationRefresh:Long = 30
         var meter_MinimalDistanceFromPrev:Float = 200.toFloat()
     }
 
     init{
-        lm = view_Main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        //GPSTimelineManager.initializeTimeline(view_Main)
+        lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        //GPSTimelineManager.initializeTimeline(context)
 
         if(gpsTimeline.isNotEmpty())
             nowLocation = GPSTimelineManager.gpsTimeline[0]?.location
     }
 
-    fun initializeLocationManager(){
-        if(PermissionManager.isExist_deniedPermission(view_Main, permissionForGPS)) {
-            println("coarse permission : ${ContextCompat.checkSelfPermission(view_Main, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
-            println("fine permission : ${ContextCompat.checkSelfPermission(view_Main, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
+    fun start_GetLocation(){
+        if(PermissionManager.isExist_deniedPermission(context, permissionForGPS)) {
+            println("coarse permission : ${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
+            println("fine permission : ${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
             return
         }
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER
-            , min_PeriodLocationRefresh * 60000,
+            , 1,
             meter_MinimalDistanceFromPrev, this)
         println("Stamper initializing is finished.")
     }
@@ -55,12 +54,19 @@ class GPSStamper(private val view_Main : Context) : LocationListener{
         }
 
         try {
-            saveToDB(GPSTimeStamp(view_Main, nowLocation as Location))
+            saveToDB(GPSTimeStamp(context, nowLocation as Location))
         }catch(e: Exception){
             println("catch in stamp... ${e.toString()}")
         }
 
+        if(context is GatheringService)
+            stop_GetLocation()
+
         return nowLocation
+    }
+
+    fun stop_GetLocation(){
+        lm.removeUpdates(this)
     }
 
     private fun saveToDB(newTimeStamp: GPSTimeStamp){
@@ -69,7 +75,7 @@ class GPSStamper(private val view_Main : Context) : LocationListener{
                 "'${newTimeStamp.location.longitude}', '${newTimeStamp.airInfo.toString()}', " +
                 "'${newTimeStamp.location.provider}')"
 
-        val db = TimelineDBHelper(view_Main)
+        val db = TimelineDBHelper(context)
         db.writableDatabase.execSQL(sqlInsert)
     }
 
