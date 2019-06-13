@@ -38,7 +38,7 @@ class GatheringService : Service(){
         stamperInBackground = GPSStamper(this)
 
         val preference = applicationContext.getSharedPreferences(nameUsingPreference, Context.MODE_PRIVATE)
-        val prevTime_GetLocation = preference.getLong(GPSStamper.prevStampTime, 0)
+        val prevTime_GetLocation = preference.getLong(GPSStamper.prevStampTimeKey, 0)
         val passedTimeFromLastLocation = System.currentTimeMillis() - prevTime_GetLocation
         val periodSetted_LocationRefresh = GPSStamper.min_PeriodLocationRefresh * 60000
 
