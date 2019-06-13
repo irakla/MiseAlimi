@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.location.Location
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -14,7 +15,7 @@ import java.util.*
 var formatstr: String = "yy년 MM월 dd일 E\n" +
         "a hh시mm분"
 
-class GPSTimeStamp(view_Main: AppCompatActivity, location : Location, airInfo: AirInfoType = null){
+class GPSTimeStamp(view_Main: Context, location : Location, airInfo: AirInfoType = null){
     val location : Location
     var theTimeNotification = Date(location.time).toString()
         get() = field

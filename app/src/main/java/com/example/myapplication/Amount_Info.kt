@@ -204,7 +204,8 @@ class Amount_Info : Fragment() {
             if(it.airInfo == null)
                 return@forEach
 
-            val pm10 = it.airInfo?.getString("pm10Value")?.toInt()
+            val pm10str = it.airInfo?.getString("pm10Value")
+            val pm10 = if(pm10str == "-" || pm10str == null) null else pm10str.toInt()
 
             if(pm10 == null)
                 return@forEach

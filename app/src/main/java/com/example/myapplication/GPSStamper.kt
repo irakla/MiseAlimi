@@ -11,7 +11,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import java.lang.Exception
 
-class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
+class GPSStamper(private val view_Main : Context) : LocationListener{
     private val lm : LocationManager
     val gpsTimeline = GPSTimelineManager.gpsTimeline
     private var nowLocation : Location? = null
@@ -36,10 +36,7 @@ class GPSStamper(private val view_Main : AppCompatActivity) : LocationListener{
     }
 
     fun initializeLocationManager(){
-        println("Stamper is not null")
-        if(PermissionManager.isExist_deniedPermission(view_Main,
-                permissionForGPS
-            )) {
+        if(PermissionManager.isExist_deniedPermission(view_Main, permissionForGPS)) {
             println("coarse permission : ${ContextCompat.checkSelfPermission(view_Main, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
             println("fine permission : ${ContextCompat.checkSelfPermission(view_Main, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
             return

@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_gps_list.*
@@ -13,7 +14,7 @@ import java.net.UnknownHostException
 
 typealias AirInfoType = JSONObject?
 
-class DownloaderForAirInfo(private val view_Main: AppCompatActivity)
+class DownloaderForAirInfo(private val view_Main: Context)
     : AsyncTask<GPSTimeStamp, Void, AirInfoType>()
 {
     override fun doInBackground(vararg params_TimeStamps: GPSTimeStamp): AirInfoType {

@@ -20,31 +20,55 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"/>
     <ImageView
-            android:layout_width="239dp"
-            android:layout_height="214dp" app:srcCompat="@drawable/normal" android:id="@+id/changeview"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="4dp"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginEnd="8dp" android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/viewPager" app:layout_constraintHorizontal_bias="0.494"
-            app:layout_constraintVertical_bias="0.155"/>
+            android:layout_width="130dp"
+            android:layout_height="120dp" app:srcCompat="@drawable/normal" android:id="@+id/changeview"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="40dp"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/textView5"
+            android:layout_marginTop="60dp" app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp" app:srcCompat="@drawable/normal" android:id="@+id/changeview2"
+            app:layout_constraintBottom_toTopOf="@+id/textView2"
+            app:layout_constraintStart_toEndOf="@+id/changeview"
+            android:layout_marginStart="10dp" app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="8dp" android:layout_marginTop="60dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="40dp"
+            app:layout_constraintHorizontal_bias="1.0"/>
     <TextView
-            android:text="오늘의 미세먼지"
-            android:textSize="35dp"
+            android:text="미세먼지"
+            android:textSize="25dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/textView5"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="56dp"
-            app:layout_constraintBottom_toTopOf="@+id/viewPager" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/changeview" app:layout_constraintVertical_bias="0.119"/>
+            app:layout_constraintStart_toStartOf="@+id/changeview"
+            app:layout_constraintEnd_toEndOf="@+id/changeview"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView6"/>
+    <TextView
+            android:text="초미세먼지"
+            android:textSize="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/textView2"
+            app:layout_constraintStart_toStartOf="@+id/changeview2"
+            app:layout_constraintEnd_toEndOf="@+id/changeview2" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView4"/>
     <TextView
             android:textColor="@color/textred"
             android:text="보통"
-            android:textSize="35dp"
+            android:textSize="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/textView6"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintHorizontal_bias="0.0" app:layout_constraintBottom_toTopOf="@+id/viewPager"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/changeview"
-            app:layout_constraintVertical_bias="0.119" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"/>
+            app:layout_constraintEnd_toEndOf="@+id/textView5" android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/viewPager"
+            app:layout_constraintStart_toStartOf="@+id/textView5"
+            android:layout_marginBottom="60dp"/>
+    <TextView
+            android:textColor="@color/textred"
+            android:text="보통"
+            android:textSize="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/textView4"
+            app:layout_constraintBottom_toTopOf="@+id/viewPager"
+            android:layout_marginBottom="60dp"
+            app:layout_constraintStart_toStartOf="@+id/textView2" app:layout_constraintEnd_toEndOf="@+id/textView2"/>
 </android.support.constraint.ConstraintLayout>

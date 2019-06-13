@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.databinding.ObservableArrayList
 import android.location.Location
 import android.os.Build
@@ -16,7 +17,7 @@ object GPSTimelineManager {
         get() = field
         private set(newTimeLine) { field = newTimeLine }
 
-    fun initializeTimeline(view_Main: AppCompatActivity){
+    fun initializeTimeline(view_Main: Context){
         val db = TimelineDBHelper(view_Main)
         val dbCursor = db.readableDatabase.rawQuery("SELECT * FROM timeline", null)
 
