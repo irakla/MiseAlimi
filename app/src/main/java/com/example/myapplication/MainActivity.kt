@@ -38,9 +38,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        //test for service
-        //startService(Intent(this, GatheringService::class.java))
-
         myWebView = findViewById(R.id.webview)
         myWebView.webChromeClient = WebChromeClient()
         myWebView.webViewClient = WebViewClient()
@@ -56,8 +53,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         gpsBackground = GPSStamper(this)
+        GPSTimelineManager.initializeTimeline(this)
 
         gpsBackground?.initializeLocationManager()
+
+
+        //test for service
+        //startService(Intent(this, GatheringService::class.java))
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

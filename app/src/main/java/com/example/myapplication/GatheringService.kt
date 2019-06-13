@@ -19,6 +19,7 @@ import java.util.*
 
 
 class GatheringService : Service(), LocationListener {
+    private var stamperInBackground: GPSStamper? = null
     private val INTERVAL: Long = 10 * 1000
     private val mHandler: Handler = Handler()
     private var mTimer: Timer? = null
@@ -34,15 +35,8 @@ class GatheringService : Service(), LocationListener {
         // schedule task
         mTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(), 0, INTERVAL)
 
-        if(PermissionManager.isExist_deniedPermission(this, GPSStamper.permissionForGPS)) {
-            println("coarse permission : ${ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
-            println("fine permission : ${ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
-            return
-        }
-
-        lm?.requestLocationUpdates(LocationManager.GPS_PROVIDER
-            , /*min_PeriodLocationRefresh * 60000*/1,
-            meter_MinimalDistanceFromPrev, this)
+        stamperInBackground = GPSStamper(this)
+        stamperInBackground?.initializeLocationManager()
     }
 
     inner class TimeDisplayTimerTask: TimerTask() {

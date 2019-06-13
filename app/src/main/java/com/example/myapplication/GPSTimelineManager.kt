@@ -4,7 +4,6 @@ import android.content.Context
 import android.databinding.ObservableArrayList
 import android.location.Location
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -17,8 +16,8 @@ object GPSTimelineManager {
         get() = field
         private set(newTimeLine) { field = newTimeLine }
 
-    fun initializeTimeline(view_Main: Context){
-        val db = TimelineDBHelper(view_Main)
+    fun initializeTimeline(context: Context){
+        val db = TimelineDBHelper(context)
         val dbCursor = db.readableDatabase.rawQuery("SELECT * FROM timeline", null)
 
         //TODO : db읽기 예외처리
@@ -34,7 +33,7 @@ object GPSTimelineManager {
                 val airInfo: AirInfoType = if(serializedJSON == "null") null
                 else JSONObject(serializedJSON)
 
-                GPSTimeStamp(view_Main, location, airInfo)
+                GPSTimeStamp(context, location, airInfo)
             }while(dbCursor.moveToNext())
         dbCursor.close()
     }
