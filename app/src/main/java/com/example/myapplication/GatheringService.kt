@@ -144,7 +144,7 @@ class GatheringService : Service(){
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        val restartServiceTask = Intent(applicationContext, GatheringService.javaClass);
+        val restartServiceTask = Intent(applicationContext, GatheringService::class.java);
         restartServiceTask.setPackage(packageName);
         val restartPendingIntent = PendingIntent.getService(applicationContext, 1, restartServiceTask, PendingIntent.FLAG_ONE_SHOT);
         val myAlarmService = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
