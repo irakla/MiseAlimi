@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
+import android.util.Log
 import android.view.KeyEvent
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -25,7 +26,6 @@ val permissionForEssential: Array<out String> = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION,
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.INTERNET,
-    Manifest.permission.ACCESS_NETWORK_STATE,
     Manifest.permission.RECEIVE_BOOT_COMPLETED
 )
     get() = field.clone()
@@ -35,7 +35,6 @@ val permissionForEssential: Array<out String> = arrayOf(
 class MainActivity : AppCompatActivity() {
     lateinit var myWebView: WebView
     @RequiresApi(Build.VERSION_CODES.M)
-    private var gpsBackground: GPSStamper? = null
     val timeline = GPSTimelineManager.gpsTimeline
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,12 +55,9 @@ class MainActivity : AppCompatActivity() {
                 "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
         }
 
-        //gpsBackground = GPSStamper(this)
         GPSTimelineManager.initializeTimeline(this)
 
-        //gpsBackground?.start_GetLocation()
-
-        //test for service
+        //if service is dead
         if(!GatheringService.isRunning)
             startService(Intent(this, GatheringService::class.java))
     }
@@ -98,19 +94,19 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         //////for log
-        println("requestCode : $requestCode")
+        Log.i(this.javaClass.name + ".PermissionResult","requestCode : $requestCode")
         println()
         for(index: Int in 0..grantResults.size - 1)
-            println(permissions[index] + " : " + if(grantResults[index] == 0) "허가됨" else "불허")
+            Log.i(this.javaClass.name + ".PermissionResult", permissions[index] + " : " + if(grantResults[index] == 0) "허가됨" else "불허")
     }
 }
-private class MyWebViewClient : WebViewClient() {
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        if (view != null) {
-            view.loadUrl(url)
+    private class MyWebViewClient : WebViewClient() {
+        override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+            if (view != null) {
+                view.loadUrl(url)
+            }
+            return false
         }
-        return false
-    }
 }
 class WebAppInterface(private val mContext: Context) {
     /** Show a toast from the web page  */

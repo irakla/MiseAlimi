@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.SystemClock
 import android.support.v4.app.NotificationCompat
+import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
 import java.text.SimpleDateFormat
@@ -20,7 +21,7 @@ import java.util.*
 class GatheringService : Service(){
     private var stamperInBackground: GPSStamper? = null
     private val mHandler: Handler = Handler()
-    private var mTimer: Timer? = null
+    private var gatheringTimer: Timer? = null
 
     companion object{
         class BootReceiver : BroadcastReceiver() {
@@ -28,7 +29,7 @@ class GatheringService : Service(){
                 if(Intent.ACTION_BOOT_COMPLETED.equals(intent.action)) {
                     var serviceIntent = Intent(context, GatheringService:: class.java)
 
-                    if(Build.VERSION.SDK_INT >= 26)
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         context.startForegroundService(serviceIntent)
                     else
                         context.startService(serviceIntent)
@@ -36,35 +37,34 @@ class GatheringService : Service(){
             }
         }
 
+        var min_PeriodLocationRefresh:Long = 20
         var isRunning = false
             private set(stateIsRunning) { field = stateIsRunning }
-
-        val nameUsingPreference = "StampPeriod"
     }
 
     override fun onCreate() {
-        if (mTimer != null) {
-            mTimer?.cancel()
+        if (gatheringTimer != null) {
+            gatheringTimer?.cancel()
         } else {
             // recreate new
-            mTimer = Timer()
+            gatheringTimer = Timer()
         }
         // schedule task
 
+        stamperInBackground = GPSStamper(applicationContext)
 
-        stamperInBackground = GPSStamper(this)
+        val preference = applicationContext.getSharedPreferences(GPSStamper.nameUsingPreference, Context.MODE_PRIVATE)
+        val prevTimeGetLocation = preference.getLong(GPSStamper.prevStampTimeKey, 0)
+        Log.i(this.javaClass.name + ".prevGetLocationTime", prevTimeGetLocation.toString())
+        val passedTimeFromLastLocation = System.currentTimeMillis() - prevTimeGetLocation
+        val periodSettedLocationRefresh = min_PeriodLocationRefresh * MINUTE_BY_MILLI_SEC
 
-        val preference = applicationContext.getSharedPreferences(nameUsingPreference, Context.MODE_PRIVATE)
-        val prevTime_GetLocation = preference.getLong(GPSStamper.prevStampTimeKey, 0)
-        val passedTimeFromLastLocation = System.currentTimeMillis() - prevTime_GetLocation
-        val periodSetted_LocationRefresh = GPSStamper.min_PeriodLocationRefresh * 60000
-
-        mTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(),
-            if(passedTimeFromLastLocation < periodSetted_LocationRefresh)
-                periodSetted_LocationRefresh - passedTimeFromLastLocation
+        gatheringTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(),
+            if(passedTimeFromLastLocation < periodSettedLocationRefresh)
+                periodSettedLocationRefresh - passedTimeFromLastLocation
             else
                 0
-        , periodSetted_LocationRefresh
+        , periodSettedLocationRefresh
         )
 
         startInForeground()
@@ -82,7 +82,7 @@ class GatheringService : Service(){
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    stamperInBackground?.start_GetLocation()
+                    stamperInBackground?.startGetLocation()
                 }
             })
         }
@@ -100,11 +100,10 @@ class GatheringService : Service(){
         val remoteViews = RemoteViews(packageName, R.layout.view_foreground_notification)
 
         var builder: NotificationCompat.Builder
-        if(Build.VERSION.SDK_INT >= 26){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel_id = "timeline_gathering_channel"
             val channel = NotificationChannel(channel_id, "Timeline Gathering Channel",
                 NotificationManager.IMPORTANCE_DEFAULT)
-
 
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).
                 createNotificationChannel(channel)
@@ -118,7 +117,7 @@ class GatheringService : Service(){
         builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.verygood))
         builder.setBadgeIconType(R.drawable.verygood)
         builder.setContentTitle("MiseAlimi")
-        builder.setContentText("${GPSStamper.min_PeriodLocationRefresh}분마다 위치정보를 수집합니다.")
+        builder.setContentText("${min_PeriodLocationRefresh}분마다 위치정보를 수집합니다.")
         builder.setDefaults(Notification.DEFAULT_VIBRATE)
         builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
         //builder.setContent(remoteViews)
@@ -129,7 +128,6 @@ class GatheringService : Service(){
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         return null
     }
 

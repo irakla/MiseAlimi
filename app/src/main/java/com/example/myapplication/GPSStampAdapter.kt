@@ -31,10 +31,10 @@ class GPSStampAdapter(
                 sender: ObservableArrayList<GPSTimeStamp>?, positionStart: Int, itemCount: Int
             ) {
                 val scrollOnListViewIsTop = !viewShowing.canScrollVertically(-1)
-                println("스크롤은 맨위에 : ${scrollOnListViewIsTop}")
 
                 notifyItemRangeInserted(positionStart, itemCount)
 
+                //scroll to top
                 if(viewShowing is RecyclerView && scrollOnListViewIsTop)
                     viewShowing.scrollToPosition(0)
             }
@@ -61,11 +61,13 @@ class GPSStampAdapter(
     override fun onBindViewHolder(holder: GPSTimeStampViewHolder, position: Int) {
         val nowTimeStamp = timelineDataset[position]
 
+        holder
         holder.latitudeView.setText(String.format("%.3f", nowTimeStamp.location.latitude) + ", ")
         holder.longitudeView.setText(String.format("%.3f", nowTimeStamp.location.longitude))
         holder.timeView.setText(nowTimeStamp.theTimeNotification)
         holder.airInfoView.setText("측정정보 : ${nowTimeStamp.airInfo?.getString("dataTime")} \n"
             + nowTimeStamp.airInfo?.getString("pm10Value") + "ppm")
 
+        holder.itemView.setOnClickListener(nowTimeStamp)
     }
 }

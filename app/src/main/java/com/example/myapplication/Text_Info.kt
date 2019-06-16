@@ -40,7 +40,7 @@ class Text_Info : Fragment(), Observer {
     private fun setContent(){
 
         // 담배
-        var ciga: Double = 0.0
+        var ciga = 0.0
         ciga = finedustInspiration / 12000
 
         textView10.setText(

@@ -22,20 +22,20 @@ class GPSStamper(private val context : Context) : LocationListener{
             Manifest.permission.INTERNET
         )
 
-        var min_PeriodLocationRefresh:Long = 20
         var meter_MinimalDistanceFromPrev:Float = 200.toFloat()
+
+        val nameUsingPreference = "StampPeriod"
         val prevStampTimeKey = "StampTime"
     }
 
     init{
         lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        //GPSTimelineManager.initializeTimeline(context)
 
         if(gpsTimeline.isNotEmpty())
             nowLocation = GPSTimelineManager.gpsTimeline[0]?.location
     }
 
-    fun start_GetLocation(){
+    fun startGetLocation(){
         if(PermissionManager.isExist_deniedPermission(context, permissionForGPS)) {
             println("coarse permission : ${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
             println("fine permission : ${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
@@ -57,22 +57,22 @@ class GPSStamper(private val context : Context) : LocationListener{
         try {
             saveToDB(GPSTimeStamp(context, nowLocation as Location))
         }catch(e: Exception){
-            println("catch in stamp... ${e.toString()}")
+            println("catch in stamp... $e")
         }
 
-        val stampTimePreference = context.getSharedPreferences(GatheringService.nameUsingPreference, Context.MODE_PRIVATE)
+        val stampTimePreference
+                = context.applicationContext.getSharedPreferences(nameUsingPreference, Context.MODE_PRIVATE)
         val stampTimeEditor = stampTimePreference.edit()
         stampTimeEditor.putLong(prevStampTimeKey, System.currentTimeMillis())
+        stampTimeEditor.apply()
 
         if(context is GatheringService)
-            stop_GetLocation()
+            stopGetLocation()
 
         return nowLocation
     }
 
-    fun stop_GetLocation(){
-        lm.removeUpdates(this)
-    }
+    private fun stopGetLocation() = lm.removeUpdates(this)
 
     private fun saveToDB(newTimeStamp: GPSTimeStamp){
         val sqlInsert = "INSERT INTO timeline (time_mil, latitude, longitude, airJSON, provider) " +
@@ -80,7 +80,7 @@ class GPSStamper(private val context : Context) : LocationListener{
                 "'${newTimeStamp.location.longitude}', '${newTimeStamp.airInfo.toString()}', " +
                 "'${newTimeStamp.location.provider}')"
 
-        val db = TimelineDBHelper(context)
+        val db = TimelineDBHelper(context.applicationContext)
         db.writableDatabase.execSQL(sqlInsert)
     }
 

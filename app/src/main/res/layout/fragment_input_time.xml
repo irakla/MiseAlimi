@@ -24,8 +24,7 @@
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_centerHorizontal="true"
-                android:timePickerMode="spinner"
-        />
+                android:timePickerMode="spinner"/>
         <TextView
                 android:text="귀가 시간"
                 android:textAlignment="center"

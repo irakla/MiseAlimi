@@ -14,7 +14,7 @@ import java.net.UnknownHostException
 
 typealias AirInfoType = JSONObject?
 
-class DownloaderForAirInfo(private val view_Main: Context)
+class DownloaderForAirInfo(private val context: Context)
     : AsyncTask<GPSTimeStamp, Void, AirInfoType>()
 {
     override fun doInBackground(vararg params_TimeStamps: GPSTimeStamp): AirInfoType {
@@ -70,16 +70,5 @@ class DownloaderForAirInfo(private val view_Main: Context)
         }
 
         return nowAirInfo
-    }
-
-    override fun onPostExecute(result: AirInfoType) {
-        when(view_Main){
-            is GPS_List -> {
-                val adapterForTimelineView = view_Main.gpsTimelineView.adapter
-                adapterForTimelineView?.notifyDataSetChanged()
-            }
-        }
-
-        super.onPostExecute(result)
     }
 }

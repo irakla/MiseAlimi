@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,9 +69,10 @@ class Amount_Info : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        buttonDetail.setOnClickListener(object: View.OnClickListener{
+        buttonLocationLog.setOnClickListener(object: View.OnClickListener{
             override fun onClick(v: View?) {
-                startActivity(Intent(activity, GPS_List::class.java))
+                if(GPS_List.listIsNotShowing)
+                    startActivity(Intent(activity, GPS_List::class.java))
             }
         })
 
@@ -94,7 +96,7 @@ class Amount_Info : Fragment() {
                             val timePreferenceEditor = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)?.edit()
                             timePreferenceEditor?.putString("GetOutTime", getOutTimeString)
                             timePreferenceEditor?.putString("GetInTime", getInTimeString)
-                            timePreferenceEditor?.commit()
+                            timePreferenceEditor?.apply()
 
                             setOutsideTime()
                             setDustInspiration()
@@ -129,79 +131,63 @@ class Amount_Info : Fragment() {
         if(userWeight == null || userInspiRate == null)
             return
 
-        var getOutIsPreviousDay =
-            if(getOutTime[HOUR].toInt() > getInTime[HOUR].toInt())
-                true
-            else if(getOutTime[HOUR].toInt() == getInTime[HOUR].toInt()
-                && getOutTime[MINUTE].toInt() > getInTime[MINUTE].toInt())
-                true
-            else
-                false
+        val hourGetOutTime = getOutTime[HOUR].toInt()
+        val minuteGetOutTime = getOutTime[MINUTE].toInt()
+        val hourGetInTime = getInTime[HOUR].toInt()
+        val minuteGetInTime = getInTime[MINUTE].toInt()
 
-        val time_OneDayMilis = 24 * 60 * 60 * 1000
-        var timestr_GetOut = SimpleDateFormat("yyyy-MM-dd").
-            format(System.currentTimeMillis() - if(getOutIsPreviousDay) time_OneDayMilis else 0 ) +
-                " ${getOutTime[HOUR]}:${getOutTime[MINUTE]}"
-        var time_GetOut = SimpleDateFormat("yyyy-MM-dd hh:mm").parse(timestr_GetOut).time
+        val outTimeIsYesterday = hourGetOutTime > hourGetInTime
+                || (hourGetOutTime == hourGetInTime && minuteGetOutTime > minuteGetInTime)
 
-        var timestr_GetIn = SimpleDateFormat("yyyy-MM-dd").
-            format(System.currentTimeMillis()) +
-                " ${getInTime[HOUR]}:${getInTime[MINUTE]}"
-        var time_GetIn = SimpleDateFormat("yyyy-MM-dd hh:mm").parse(timestr_GetIn).time
-
+        val milliTimeGetOut = TimeSupporter.getTheLatestMilliTime(outTimeIsYesterday, hourGetOutTime, minuteGetOutTime)
+        val milliTimeGetIn = TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime)
 
         val timelineOnOutside = GPSTimelineManager.getTimeStampsInTheTime(
-            getOutTime[HOUR].toInt(), getOutTime[MINUTE].toInt(),
-            getInTime[HOUR].toInt(), getInTime[MINUTE].toInt()).reversed()
-        var timestampLastOnOutside : GPSTimeStamp? = null
-
+            hourGetOutTime, minuteGetOutTime,
+            hourGetInTime, minuteGetInTime
+        )
+        val fortestlist = mutableListOf(timelineOnOutside)
 
         var tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
-        var prevMilliTime: Long? = null
-        var prevAirInfo: AirInfoType? = null
 
-        var inspirationTimeByMinute : Double = 0.0
-        var inspirationVolume_mL : Double = 0.0
-        /*timelineOnOutside.forEach {
+        //위치 값 반영
+        var timeNextTimeStamp = milliTimeGetIn
+        val airInfoGetOutTime = timelineOnOutside.last()?.airInfo
 
-            if(it == null || prevAirInfo == null || it.airInfo == null)
+        timelineOnOutside.dropLast(1).forEach{
+            if(it == null)
                 return@forEach
 
-            if(prevMilliTime == null){
-                prevMilliTime = time_GetOut
-                prevAirInfo = it.airInfo
-                return@forEach
-            }
+            val pm10str = it.airInfo?.getString("pm10Value")
+            val pm10 = if(pm10str == "-" || pm10str == null) null else pm10str.toInt()
+            pm10?: return@forEach
 
-            inspirationTimeByMinute = (it.location.time - prevMilliTime as Long) / 60000.toDouble()
+            val timeInterval = (timeNextTimeStamp - it.location.time).toDouble() / MINUTE_BY_MILLI_SEC
 
-            inspirationVolume_mL = inspirationTimeByMinute * tidalVolumePerMinute_mL
-
-            if(prevAirInfo != null) {
-                val pm10 = prevAirInfo?.getString(context?.getString(R.string.PM10))?.toInt()
-                finedustByInspiration += inspirationVolume_mL * if(pm10 != null) pm10 else 0
-            }
-
-            prevMilliTime = it.location.time
-            prevAirInfo = it.airInfo
-            timestampLastOnOutside = it
-
-            println("분당호흡량 : ${tidalVolumePerMinute_mL}, 호흡시간 : ${inspirationTimeByMinute}, pm10 : ${pm10}")
+            finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10.toInt()
+            timeNextTimeStamp = it.location.time
         }
 
-        //마지막 timestamp ~ 귀가 시간
-        if(timestampLastOnOutside != null) {
-            inspirationTimeByMinute =
-                ((timestampLastOnOutside as GPSTimeStamp).location.time - prevMilliTime as Long) / 60000.toDouble()
+        if(airInfoGetOutTime != null){
+            val pm10str = airInfoGetOutTime.getString("pm10Value")
+            val pm10 = if(pm10str == "-" || pm10str == null) null else pm10str.toInt()
 
-            inspirationVolume_mL = inspirationTimeByMinute * tidalVolumePerMinute_mL
+            if(pm10 != null) {
+                val timeInterval = (timeNextTimeStamp - milliTimeGetOut).toDouble() / MINUTE_BY_MILLI_SEC
+                finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10.toInt()
+            }
+        }
 
-            val pm10 = prevAirInfo?.getString(context?.getString(R.string.PM10))?.toInt()
-            finedustByInspiration += inspirationVolume_mL * if (pm10 != null) pm10 else 0
-        }*/
+        finedustByInspiration /= 1000000                    //mL 보정
+        inspirationView.text = String.format("%,.2fμg", finedustByInspiration)
+        //위치 값 반영
 
+        //초안(외출시간 * 첫번째 값 미세먼지)
         var flagIsNotGot = true
-        val time_OnOutsideByMinute = (time_GetIn - time_GetOut) / 60000.toDouble()
+        val time_OnOutsideByMinute = (
+                TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime) -
+                        TimeSupporter.getTheLatestMilliTime(outTimeIsYesterday, hourGetOutTime, minuteGetOutTime)
+        ) / MINUTE_BY_MILLI_SEC.toDouble()
         GPSTimelineManager.gpsTimeline.forEach{
             if(it.airInfo == null)
                 return@forEach
@@ -219,7 +205,8 @@ class Amount_Info : Fragment() {
         }
 
         finedustByInspiration /= 1000000                                         //mL 보정
-        inspirationView.setText(String.format("%,.2fμg", finedustByInspiration))
+        expectationText.setText(String.format("%,.2fμg", finedustByInspiration))
+        //초안(외출시간 * 첫번째 값 미세먼지)
 
         observersForInspiration.forEach{ it.update(finedustByInspiration) }
     }

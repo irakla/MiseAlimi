@@ -1,9 +1,10 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
+import android.view.View
 import java.lang.Exception
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -15,7 +16,7 @@ import java.util.*
 var formatstr: String = "yy년 MM월 dd일 E\n" +
         "a hh시mm분"
 
-class GPSTimeStamp(view_Main: Context, location : Location, airInfo: AirInfoType = null){
+class GPSTimeStamp(context: Context, location : Location, airInfo: AirInfoType = null) : View.OnClickListener{
     val location : Location
     var theTimeNotification = Date(location.time).toString()
         get() = field
@@ -35,13 +36,13 @@ class GPSTimeStamp(view_Main: Context, location : Location, airInfo: AirInfoType
         GPSTimelineManager.gpsTimeline.add(0, (this))
         println("Misealimiback : New timestamp has created: ${location}")
         if(airInfo == null)
-            DownloaderForAirInfo(view_Main).execute(this).get()
+            DownloaderForAirInfo(context).execute(this).get()
         else
             this.airInfo = airInfo
     }
 
     private fun setTime(){
-        if(Build.VERSION.SDK_INT >= 26) {           //OS가 Oreo거나 Oreo보다 최신버전일때
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val zdt: ZonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(location.time), ZoneId.of("Asia/Seoul"))
             theTimeNotification = zdt.format(DateTimeFormatter.ofPattern(formatstr))
         }
@@ -49,5 +50,15 @@ class GPSTimeStamp(view_Main: Context, location : Location, airInfo: AirInfoType
             val dateformat = SimpleDateFormat(formatstr, Locale.KOREAN)
             theTimeNotification = dateformat.format(location.time)
         }
+    }
+
+    override fun onClick(v: View?) {
+        v?: return
+
+        val intent = Intent(v.context, LocationVisualizer::class.java)
+        intent.putExtra("latitude", location.latitude)
+        intent.putExtra("longitude", location.longitude)
+        intent.putExtra("time", location.time)
+        v.context.startActivity(intent)
     }
 }
