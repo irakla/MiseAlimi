@@ -20,6 +20,7 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import android.webkit.WebChromeClient
 import android.widget.RemoteViews
+import kotlinx.android.synthetic.main.content_main.*
 
 const val PERMISSIONCODE_Essential: Int = 1000
 val permissionForEssential: Array<out String> = arrayOf(
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        myWebView = findViewById(R.id.webview)
+        myWebView = webview
         myWebView.webChromeClient = WebChromeClient()
         myWebView.webViewClient = WebViewClient()
         myWebView.settings.javaScriptEnabled = true

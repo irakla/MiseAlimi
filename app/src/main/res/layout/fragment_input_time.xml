@@ -3,7 +3,7 @@
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-                                             tools:context=".Amount_Info" android:id="@+id/frameLayout2">
+                                             tools:context=".Amount_Info">
     
     <LinearLayout
             android:orientation="vertical"
@@ -23,7 +23,6 @@
                 android:layout_width="273dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_centerHorizontal="true"
                 android:timePickerMode="spinner"/>
         <TextView
                 android:text="귀가 시간"
@@ -35,13 +34,12 @@
                 android:layout_width="273dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_centerHorizontal="true"
                 android:timePickerMode="spinner"
         />
     </LinearLayout>
     <TextView
             android:text="외출한 시간을 입력하세요"
-            android:textSize="22dp"
+            android:textSize="22sp"
             android:layout_width="266dp"
             android:layout_height="42dp"
             android:id="@+id/textView24" android:layout_marginTop="8dp"

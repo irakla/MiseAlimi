@@ -59,6 +59,7 @@ class GPSTimeStamp(context: Context, location : Location, airInfo: AirInfoType =
         intent.putExtra("latitude", location.latitude)
         intent.putExtra("longitude", location.longitude)
         intent.putExtra("time", location.time)
+        intent.putExtra("airInfo", airInfo.toString())
         v.context.startActivity(intent)
     }
 }

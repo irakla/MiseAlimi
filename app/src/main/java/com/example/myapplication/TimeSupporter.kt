@@ -16,12 +16,27 @@ const val ZERODAY = 0
 
 class TimeSupporter {
     companion object {
+        fun IsYesterdayGetOut(
+            getOutHour: Int,
+            getOutMinute: Int,
+            getInHour: Int,
+            getInMinute: Int
+        ) : Boolean{
+            if(getOutHour > getInHour)
+                return true
+            else if(getOutHour == getInHour
+                && getOutMinute > getInMinute)
+                return true
+            else
+                return false
+        }
+
         fun getTheLatestMilliTime(
             isYesterday: Boolean,
             hourIn0_23: Int,
             minute: Int
         ): Long {
-            var theTime: Long
+            val theTime: Long
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 var timezdt =
@@ -31,7 +46,7 @@ class TimeSupporter {
                 timezdt = timezdt.withMinute(minute)
                 timezdt = timezdt.withSecond(0)
                 theTime = timezdt.toEpochSecond() * 1000
-                Log.i(this.javaClass.name + ".계산된시간", timezdt.toString())
+                Log.i(this::class.java.name + ".계산된시간", timezdt.toString())
             } else {
                 val translateToFullTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
                 val startHourTimeByGMT0000 = if (hourIn0_23 < 9) hourIn0_23 + 15 else hourIn0_23 - 9
@@ -43,7 +58,7 @@ class TimeSupporter {
                 )
                 timeString += String.format(" %2d:%2d ", startHourTimeByGMT0000, minute)
                 theTime = translateToFullTimeFormat.parse(timeString).time
-                Log.i(this.javaClass.name + ".계산된시간", timeString)
+                Log.i(this::class.java.name + ".계산된시간", timeString)
             }
 
             return theTime
@@ -51,15 +66,15 @@ class TimeSupporter {
 
         fun translateTimeToString(epochMilliSecond: Long) : String{
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                var timezdt =
+                val timezdt =
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMilliSecond), ZoneId.of("Asia/Seoul"))
 
-                val formatKorean = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분")
+                val formatKorean = DateTimeFormatter.ofPattern("yy년 MM월 dd일 HH시 mm분")
 
                 return timezdt.format(formatKorean)
             }
 
-            val translateToFullTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            val translateToFullTimeFormat = SimpleDateFormat("yy-MM-dd HH:mm")
 
             var timeString = translateToFullTimeFormat.format(
                 Date(epochMilliSecond + INTERVAL_MILLI_FOR_GMT0900)

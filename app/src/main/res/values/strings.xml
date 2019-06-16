@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MiseAlimi</string>
+    <string name="app_name">미세알리미</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_preferences">preferences</string>
     <string name="title_activity_mainview">mainview</string>

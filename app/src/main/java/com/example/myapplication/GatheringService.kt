@@ -19,15 +19,14 @@ import java.util.*
 
 
 class GatheringService : Service(){
-    private var stamperInBackground: GPSStamper? = null
     private val mHandler: Handler = Handler()
-    private var gatheringTimer: Timer? = null
+    private var stamperInBackground: GPSStamper? = null
 
     companion object{
         class BootReceiver : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 if(Intent.ACTION_BOOT_COMPLETED.equals(intent.action)) {
-                    var serviceIntent = Intent(context, GatheringService:: class.java)
+                    val serviceIntent = Intent(context, GatheringService:: class.java)
 
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                         context.startForegroundService(serviceIntent)
@@ -37,9 +36,11 @@ class GatheringService : Service(){
             }
         }
 
+
         var min_PeriodLocationRefresh:Long = 20
         var isRunning = false
             private set(stateIsRunning) { field = stateIsRunning }
+        private var gatheringTimer: Timer? = null
     }
 
     override fun onCreate() {
@@ -59,7 +60,7 @@ class GatheringService : Service(){
         val passedTimeFromLastLocation = System.currentTimeMillis() - prevTimeGetLocation
         val periodSettedLocationRefresh = min_PeriodLocationRefresh * MINUTE_BY_MILLI_SEC
 
-        gatheringTimer?.scheduleAtFixedRate(TimeDisplayTimerTask(),
+        gatheringTimer?.scheduleAtFixedRate(PeriodicLocationGatheringTask(),
             if(passedTimeFromLastLocation < periodSettedLocationRefresh)
                 periodSettedLocationRefresh - passedTimeFromLastLocation
             else
@@ -70,36 +71,27 @@ class GatheringService : Service(){
         startInForeground()
     }
 
-    inner class TimeDisplayTimerTask: TimerTask() {
+    private inner class PeriodicLocationGatheringTask: TimerTask() {
 
         override fun run() {
             // run on another thread
             mHandler.post(object : Runnable {
                 override fun run() {
-                    // display toast
-                    Toast.makeText(
-                        applicationContext, "위치수집 : " + getDateTime(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    stamperInBackground?.startGetLocation()
+                    gathering()
                 }
             })
         }
+    }
 
-        private fun getDateTime(): String {
-            // get date time in custom format
-            val sdf = SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]")
-            return sdf.format(Date())
-        }
+    private fun gathering(){
+        stamperInBackground?.startGetLocation()
     }
 
     private fun startInForeground(){
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
-        val remoteViews = RemoteViews(packageName, R.layout.view_foreground_notification)
 
-        var builder: NotificationCompat.Builder
+        val builder: NotificationCompat.Builder
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel_id = "timeline_gathering_channel"
             val channel = NotificationChannel(channel_id, "Timeline Gathering Channel",
@@ -120,7 +112,6 @@ class GatheringService : Service(){
         builder.setContentText("${min_PeriodLocationRefresh}분마다 위치정보를 수집합니다.")
         builder.setDefaults(Notification.DEFAULT_VIBRATE)
         builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-        //builder.setContent(remoteViews)
         builder.setContentIntent(pendingIntent)
 
 
@@ -142,14 +133,14 @@ class GatheringService : Service(){
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        val restartServiceTask = Intent(applicationContext, GatheringService::class.java);
-        restartServiceTask.setPackage(packageName);
-        val restartPendingIntent = PendingIntent.getService(applicationContext, 1, restartServiceTask, PendingIntent.FLAG_ONE_SHOT);
+        val restartServiceTask = Intent(applicationContext, GatheringService::class.java)
+        restartServiceTask.setPackage(packageName)
+        val restartPendingIntent = PendingIntent.getService(applicationContext, 1, restartServiceTask, PendingIntent.FLAG_ONE_SHOT)
         val myAlarmService = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         myAlarmService.set(
             AlarmManager.ELAPSED_REALTIME,
             SystemClock.elapsedRealtime() + 1000,
-            restartPendingIntent);
+            restartPendingIntent)
         super.onTaskRemoved(rootIntent)
     }
 }

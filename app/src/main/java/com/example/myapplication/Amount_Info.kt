@@ -6,13 +6,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_amount_info.*
 import kotlinx.android.synthetic.main.fragment_input_time.view.*
-import java.text.SimpleDateFormat
 
 //for string-splitted time array
 const val HOUR = 0
@@ -30,6 +28,7 @@ class Amount_Info : Fragment() {
     private var getInTime = DefaultGetInTime.split(":")
 
     private var finedustByInspiration: Double = 0.0
+    private var finedust25ByInspiration: Double = 0.0
     private val observersForInspiration: MutableList<Observer> = mutableListOf()
 
     override fun onCreateView(
@@ -76,7 +75,35 @@ class Amount_Info : Fragment() {
             }
         })
 
+        initializeButtonOutSideTime()
         setOutsideTime()
+
+        buttonDetail.setOnClickListener {
+            val hourGetOutTime = getOutTime[HOUR].toInt()
+            val minuteGetOutTime = getOutTime[MINUTE].toInt()
+            val hourGetInTime = getInTime[HOUR].toInt()
+            val minuteGetInTime = getInTime[MINUTE].toInt()
+            val getOutIsYesterday = TimeSupporter.IsYesterdayGetOut(hourGetOutTime, hourGetInTime,
+                    minuteGetOutTime, minuteGetInTime)
+
+            val detailDialog = InspirationDetailDialog(
+                activity,
+                TimeSupporter.getTheLatestMilliTime(getOutIsYesterday, hourGetOutTime, minuteGetOutTime),
+                TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime),
+                finedustByInspiration,
+                finedust25ByInspiration
+            )
+
+            detailDialog.show()
+        }
+
+        if(userWeight == null || userInspiRate == null)
+            return
+
+        setDustInspiration()
+    }
+
+    private fun initializeButtonOutSideTime(){
         buttonOutsideTime.setOnClickListener(object: View.OnClickListener{
             override fun onClick(v: View?) {
                 val builder = AlertDialog.Builder(activity)
@@ -107,11 +134,6 @@ class Amount_Info : Fragment() {
                 builder.show()
             }
         })
-
-        if(userWeight == null || userInspiRate == null)
-            return
-
-        setDustInspiration()
     }
 
     private fun setOutsideTime(){
@@ -146,9 +168,8 @@ class Amount_Info : Fragment() {
             hourGetOutTime, minuteGetOutTime,
             hourGetInTime, minuteGetInTime
         )
-        val fortestlist = mutableListOf(timelineOnOutside)
 
-        var tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
+        val tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
 
         //위치 값 반영
         var timeNextTimeStamp = milliTimeGetIn
@@ -159,12 +180,15 @@ class Amount_Info : Fragment() {
                 return@forEach
 
             val pm10str = it.airInfo?.getString("pm10Value")
-            val pm10 = if(pm10str == "-" || pm10str == null) null else pm10str.toInt()
-            pm10?: return@forEach
+            val pm10 = if(pm10str == "-" || pm10str == null) 0 else pm10str.toInt()
+
+            val pm25str = it.airInfo?.getString("pm25Value")
+            val pm25 = if(pm25str == "-" || pm25str == null) 0 else pm25str.toInt()
 
             val timeInterval = (timeNextTimeStamp - it.location.time).toDouble() / MINUTE_BY_MILLI_SEC
 
-            finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10.toInt()
+            finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10
+            finedust25ByInspiration += timeInterval * tidalVolumePerMinute_mL * pm25
             timeNextTimeStamp = it.location.time
         }
 
@@ -179,11 +203,12 @@ class Amount_Info : Fragment() {
         }
 
         finedustByInspiration /= 1000000                    //mL 보정
-        inspirationView.text = String.format("%,.2fμg", finedustByInspiration)
+        finedust25ByInspiration /= 1000000
+        inspirationView.text = String.format("%,.2fμg", finedustByInspiration + finedust25ByInspiration)
         //위치 값 반영
 
         //초안(외출시간 * 첫번째 값 미세먼지)
-        var flagIsNotGot = true
+        /*var flagIsNotGot = true
         val time_OnOutsideByMinute = (
                 TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime) -
                         TimeSupporter.getTheLatestMilliTime(outTimeIsYesterday, hourGetOutTime, minuteGetOutTime)
@@ -205,10 +230,10 @@ class Amount_Info : Fragment() {
         }
 
         finedustByInspiration /= 1000000                                         //mL 보정
-        expectationText.setText(String.format("%,.2fμg", finedustByInspiration))
+        expectationText.setText(String.format("%,.2fμg", finedustByInspiration))*/
         //초안(외출시간 * 첫번째 값 미세먼지)
 
-        observersForInspiration.forEach{ it.update(finedustByInspiration) }
+        observersForInspiration.forEach{ it.update(finedustByInspiration + finedust25ByInspiration) }
     }
 
     fun addInspirationObserver(observer: Observer){

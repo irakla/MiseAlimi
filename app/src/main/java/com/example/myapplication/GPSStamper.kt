@@ -8,10 +8,15 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.widget.Toast
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 class GPSStamper(private val context : Context) : LocationListener{
     private val lm : LocationManager
+    var isHot = false
+        private set
     val gpsTimeline = GPSTimelineManager.gpsTimeline
     private var nowLocation : Location? = null
 
@@ -42,6 +47,8 @@ class GPSStamper(private val context : Context) : LocationListener{
             return
         }
 
+        isHot = true
+
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER
             , 1,
             meter_MinimalDistanceFromPrev, this)
@@ -53,6 +60,8 @@ class GPSStamper(private val context : Context) : LocationListener{
             println("GPSStamper.stamp : Location is null")
             return null
         }
+
+        showStamping()
 
         try {
             saveToDB(GPSTimeStamp(context, nowLocation as Location))
@@ -66,10 +75,19 @@ class GPSStamper(private val context : Context) : LocationListener{
         stampTimeEditor.putLong(prevStampTimeKey, System.currentTimeMillis())
         stampTimeEditor.apply()
 
-        if(context is GatheringService)
-            stopGetLocation()
+        stopGetLocation()
+        isHot = false
 
         return nowLocation
+    }
+
+    private fun showStamping(){
+        val showingFormat = SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]")
+
+        Toast.makeText(
+            context.applicationContext, "위치수집 : " + showingFormat.format(Date()),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun stopGetLocation() = lm.removeUpdates(this)
@@ -86,11 +104,11 @@ class GPSStamper(private val context : Context) : LocationListener{
 
     override fun onLocationChanged(location: Location?) {
         location ?: return
-        if(nowLocation?.time == location?.time)
+        if(nowLocation?.time == location.time)
             return
 
         nowLocation = location
-        println("Location : ${location?.provider}")
+        println("Location : ${location.provider}")
         stamp()
         println("Misealimiback : Location has changed.")
     }
