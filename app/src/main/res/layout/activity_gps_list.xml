@@ -34,7 +34,7 @@
                         android:layout_height="wrap_content"
                         android:text="이동경로 표시 : ON"
                         android:textColor="#ffffff"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:background="@drawable/editstyle"
                         android:layout_gravity="center"
                         app:layout_constraintHorizontal_bias="0.0"
