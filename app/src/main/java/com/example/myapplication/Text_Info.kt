@@ -22,7 +22,6 @@ class Text_Info : Fragment(), Observer {
     ): View? {
         // Inflate the layout for this fragment
 
-
         return inflater.inflate(R.layout.fragment_text_info, container, false)
     }
 
