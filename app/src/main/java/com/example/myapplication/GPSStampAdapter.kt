@@ -64,9 +64,9 @@ class GPSStampAdapter(
         holder.latitudeView.setText(String.format("%.3f", nowTimeStamp.location.latitude) + ", ")
         holder.longitudeView.setText(String.format("%.3f", nowTimeStamp.location.longitude))
         holder.timeView.setText(nowTimeStamp.theTimeNotification)
-        holder.airInfoView.setText("측정시간 : ${nowTimeStamp.airInfo?.getString("dataTime")} "
-            + "pm10 : ${nowTimeStamp.airInfo?.getString("pm10Value")}ppm, " +
-                "pm2.5 : ${nowTimeStamp.airInfo?.getString("pm25Value")}ppm")
+        holder.airInfoView.setText("측정시간 : ${nowTimeStamp.airInfo?.getString("dataTime")}")
+        holder.finedustView.text = "pm10 : ${nowTimeStamp.airInfo?.getString("pm10Value")}ppm, " +
+                "pm2.5 : ${nowTimeStamp.airInfo?.getString("pm25Value")}ppm"
 
         holder.itemView.setOnClickListener(nowTimeStamp)
     }

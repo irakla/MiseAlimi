@@ -36,11 +36,20 @@
         </LinearLayout>
         
         <TextView
-                android:id="@+id/air"
+                android:id="@+id/airInfoTime"
                 android:textColor="#ffffff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:paddingTop="10dp"
+                android:paddingStart="10dp"
+        />
+        <TextView
+                android:id="@+id/finedustInfo"
+                android:textColor="#ffffff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingBottom="5dp"
         />
     
         <View

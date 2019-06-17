@@ -83,8 +83,8 @@ class Amount_Info : Fragment() {
             val minuteGetOutTime = getOutTime[MINUTE].toInt()
             val hourGetInTime = getInTime[HOUR].toInt()
             val minuteGetInTime = getInTime[MINUTE].toInt()
-            val getOutIsYesterday = TimeSupporter.IsYesterdayGetOut(hourGetOutTime, hourGetInTime,
-                    minuteGetOutTime, minuteGetInTime)
+            val getOutIsYesterday = TimeSupporter.IsYesterdayGetOut(hourGetOutTime, minuteGetOutTime,
+                    hourGetInTime, minuteGetInTime)
 
             val detailDialog = InspirationDetailDialog(
                 activity,
@@ -194,12 +194,17 @@ class Amount_Info : Fragment() {
 
         if(airInfoGetOutTime != null){
             val pm10str = airInfoGetOutTime.getString("pm10Value")
-            val pm10 = if(pm10str == "-" || pm10str == null) null else pm10str.toInt()
+            val pm10 = if(pm10str == "-" || pm10str == null) 0 else pm10str.toInt()
 
-            if(pm10 != null) {
-                val timeInterval = (timeNextTimeStamp - milliTimeGetOut).toDouble() / MINUTE_BY_MILLI_SEC
-                finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10.toInt()
-            }
+            val pm25str = airInfoGetOutTime.getString("pm25Value")
+            val pm25 = if(pm25str == "-" || pm25str == null) 0 else pm25str.toInt()
+
+            val timeInterval = (timeNextTimeStamp - milliTimeGetOut).toDouble() / MINUTE_BY_MILLI_SEC
+
+
+            finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10
+            finedust25ByInspiration += timeInterval * tidalVolumePerMinute_mL * pm25
+
         }
 
         finedustByInspiration /= 1000000                    //mL 보정
