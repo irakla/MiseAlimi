@@ -1,7 +1,8 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
+import android.util.Log
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +22,24 @@ class InputTimeView(context: Context?) : ConstraintLayout(context){
 
         val preference = context.getSharedPreferences("Time", Context.MODE_PRIVATE)
         if(preference != null) {
-            val savedGetOutTime = preference.getString("GetOutTime", DefaultGetOutTime).split(":")
-            val savedGetInTime = preference.getString("GetInTime", DefaultGetInTime).split(":")
+            val stringGetOutTime = preference.getString("GetOutTime", DefaultGetOutTime)
+            val stringGetInTime = preference.getString("GetInTime", DefaultGetInTime)
+
+            val savedGetOutTime =
+                if(stringGetOutTime != null)
+                    stringGetOutTime.split(":")
+                else{
+                    Log.d("AmountInfo onCreate", "GetOutTimeString is invalid : ${stringGetOutTime.toString()}")
+                    DefaultGetOutTime.split(":")
+                }
+
+            val savedGetInTime =
+                if(stringGetInTime != null)
+                    stringGetInTime.split(":")
+                else{
+                    Log.d("AmountInfo onCreate", "GetInTimeString is invalid : ${stringGetInTime.toString()}")
+                    DefaultGetInTime.split(":")
+                }
 
             getOutTime.hour = savedGetOutTime[HOUR].toInt()
             getOutTime.minute = savedGetOutTime[MINUTE].toInt()

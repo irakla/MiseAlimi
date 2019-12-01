@@ -1,6 +1,6 @@
 package com.example.myapplication
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.widget.LinearLayout
 import android.widget.TextView
 import kotlinx.android.synthetic.main.gps_cell.view.*

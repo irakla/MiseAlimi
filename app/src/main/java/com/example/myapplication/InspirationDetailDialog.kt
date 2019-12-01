@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.view.LayoutInflater
 import kotlinx.android.synthetic.main.dialog_amount_detail.*
 

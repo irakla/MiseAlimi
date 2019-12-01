@@ -2,11 +2,11 @@ package com.example.myapplication
 
 import android.content.Context
 import android.graphics.Color
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import android.view.textservice.TextInfo
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_mainview.*
@@ -55,7 +55,7 @@ class MainView : AppCompatActivity() {
             isPossibleInfos.set("pm25Value", pm25data != "-")
 
             if(isPossibleInfos.getValue("pm10Value")){
-                var ppm10data: Int = if (pm10data != null) pm10data?.toInt() as Int else 0
+                var ppm10data: Int = pm10data?.toInt() ?: 0
 
                 when(ppm10data) {
                     in 1..30 -> textView6.setText("좋음")
@@ -85,7 +85,7 @@ class MainView : AppCompatActivity() {
 
 
             if(isPossibleInfos.getValue("pm25Value")){
-                var ppm25data: Int = if (pm25data != null) pm25data?.toInt() as Int else 0
+                var ppm25data: Int = pm25data?.toInt() ?: 0
 
                 when(ppm25data) {
                     in 1..15 -> textView4.setText("좋음")

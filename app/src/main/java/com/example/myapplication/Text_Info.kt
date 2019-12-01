@@ -3,7 +3,7 @@ package com.example.myapplication
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,20 +50,20 @@ class Text_Info : Fragment(), Observer {
             )
         )
 
-        if (finedustInspiration != null) {
-            var kf94: Double = 0.0
-            var kf80: Double = 0.0
-            var realkf94: Double = 0.0
-            var realkf80: Double = 0.0
-            kf94 = finedustInspiration * 0.99
-            kf80 = finedustInspiration * 0.8
-            realkf94 = finedustInspiration - kf94
-            realkf80 = finedustInspiration - kf80
-            textView7.setText(String.format("kf94 마스크 착용시 : %,.2fug", kf94))
-            textView12.setText(String.format("실제 흡입량 : %,.2fug", realkf94))
-            textView9.setText(String.format("kf80 마스크 착용시 : %,.2fug", kf80))
-            textView13.setText(String.format("실제 흡입량 : %,.2fug", realkf80))
-        }
+        var kf94: Double = 0.0
+        var kf80: Double = 0.0
+        var realkf94: Double = 0.0
+        var realkf80: Double = 0.0
+
+        kf94 = finedustInspiration * 0.99
+        kf80 = finedustInspiration * 0.8
+        realkf94 = finedustInspiration - kf94
+        realkf80 = finedustInspiration - kf80
+
+        textView7.text = String.format("kf94 마스크 착용시 : %,.2fug", kf94)
+        textView12.text = String.format("실제 흡입량 : %,.2fug", realkf94)
+        textView9.text = String.format("kf80 마스크 착용시 : %,.2fug", kf80)
+        textView13.text = String.format("실제 흡입량 : %,.2fug", realkf80)
     }
 
     override fun update(valueChanged: Any?) {

@@ -1,7 +1,7 @@
 package com.example.myapplication
 
 import android.graphics.Color
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.example.myapplication.GPSTimelineManager.gpsTimeline
@@ -35,21 +35,22 @@ class LocationVisualizer : AppCompatActivity(), OnMapReadyCallback {
 
         intent?: return
 
-        val latitude = intent.extras.getDouble("latitude", 37.305685)
-        val longitude = intent.extras.getDouble("longitude", 127.922691)
-        val time = intent.extras.getLong("time", 0)
-        val airInfo = intent.extras.getString("airInfo", "null")
+        val latitude = intent.extras?.getDouble("latitude", 37.305685)
+        val longitude = intent.extras?.getDouble("longitude", 127.922691)
+        val time = intent.extras?.getLong("time", 0)
+        val airInfo = intent.extras?.getString("airInfo", "null")
 
-        val placeGathered = LatLng(latitude, longitude)
+        if(latitude != null && longitude != null) {
+            val placeGathered = LatLng(latitude, longitude)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placeGathered, 16.toFloat()))
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placeGathered, 16.toFloat()))
-
-        if(GPS_List.isOnDrawingPath) {
-            drawTimeline()
-            mMap.addMarker(createMarker(latitude, longitude, time, airInfo))
+            if(time != null && airInfo != null)
+                if (GPS_List.isOnDrawingPath) {
+                    drawTimeline()
+                    mMap.addMarker(createMarker(latitude, longitude, time, airInfo))
+                } else
+                    mMap.addMarker(createMarker(latitude, longitude, time, airInfo))
         }
-        else
-            mMap.addMarker(createMarker(latitude, longitude, time, airInfo))
     }
 
     private fun drawTimeline(){

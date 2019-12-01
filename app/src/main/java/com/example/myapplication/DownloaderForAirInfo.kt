@@ -2,7 +2,7 @@ package com.example.myapplication
 
 import android.content.Context
 import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_gps_list.*
 import org.json.JSONException
 import org.json.JSONObject

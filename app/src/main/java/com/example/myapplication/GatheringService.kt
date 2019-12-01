@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.SystemClock
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -107,7 +107,7 @@ class GatheringService : Service(){
 
         builder.setSmallIcon(R.drawable.verygood)
         builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.verygood))
-        builder.setBadgeIconType(R.drawable.verygood)
+        builder.setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
         builder.setContentTitle("MiseAlimi")
         builder.setContentText("${min_PeriodLocationRefresh}분마다 위치정보를 수집합니다.")
         builder.setDefaults(Notification.DEFAULT_VIBRATE)

@@ -1,7 +1,7 @@
 package com.example.myapplication
 
 import android.content.Context
-import android.databinding.ObservableArrayList
+import androidx.databinding.ObservableArrayList
 import android.location.Location
 import android.os.Build
 import android.util.Log

@@ -5,7 +5,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,13 +55,29 @@ class Amount_Info : Fragment() {
 
         val timePreference = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)
         if(timePreference != null) {
-            getOutTime = timePreference.getString(getString(R.string.GetOutTime),
-                DefaultGetOutTime).split(":")
-            getInTime = timePreference.getString(getString(R.string.GetInTime),
-                DefaultGetInTime).split(":")
+            val stringGetOutTime
+                    = timePreference.getString(getString(R.string.GetOutTime), DefaultGetOutTime)
+            val stringGetInTime
+                    = timePreference.getString(getString(R.string.GetInTime), DefaultGetInTime)
+
+            getOutTime =
+                if(stringGetOutTime != null)
+                    stringGetOutTime.split(":")
+                else{
+                    Log.d("AmountInfo onCreate", "GetOutTimeString is invalid : ${stringGetOutTime.toString()}")
+                    DefaultGetOutTime.split(":")
+                }
+
+            getInTime =
+                if(stringGetInTime != null)
+                    stringGetInTime.split(":")
+                else{
+                    Log.d("AmountInfo onCreate", "GetInTimeString is invalid : ${stringGetInTime.toString()}")
+                    DefaultGetInTime.split(":")
+                }
         }
 
-        println("amount의 viewgroup : ${container})")
+        Log.d("amount의 viewgroup", "$container")
 
         return inflater.inflate(R.layout.fragment_amount_info, container, false)
     }
