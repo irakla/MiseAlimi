@@ -19,7 +19,7 @@ const val MINUTE = 1
 const val DefaultGetOutTime = "9:00"
 const val DefaultGetInTime = "18:00"
 
-class Amount_Info : Fragment() {
+class AmountInfoFragment : Fragment() {
     private var userName: String? = ""
     private var userAge: Int? = 0
     private var userWeight: Int? = 0

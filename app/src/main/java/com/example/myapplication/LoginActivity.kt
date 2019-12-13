@@ -1,17 +1,13 @@
 package com.example.myapplication
 
 import android.Manifest
-import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
 import android.util.Log
 import android.view.KeyEvent
 import android.webkit.JavascriptInterface
@@ -19,29 +15,26 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import android.webkit.WebChromeClient
-import android.widget.RemoteViews
 import kotlinx.android.synthetic.main.content_main.*
 
-const val PERMISSIONCODE_Essential: Int = 1000
-val permissionForEssential: Array<out String> = arrayOf(
-    Manifest.permission.ACCESS_COARSE_LOCATION,
-    Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.INTERNET,
-    Manifest.permission.RECEIVE_BOOT_COMPLETED
-)
-    get() = field.clone()
+class LoginActivity : AppCompatActivity() {
+    private lateinit var myWebView: WebView
 
-
-
-class MainActivity : AppCompatActivity() {
-    lateinit var myWebView: WebView
-    @RequiresApi(Build.VERSION_CODES.M)
-    val timeline = GPSTimelineManager.gpsTimeline
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        setLoginView()
+
+        GPSTimelineManager.initializeTimeline(this.application)
+
+        //if service is dead
+        if(!GatheringService.isRunning)
+            startService(Intent(this, GatheringService::class.java))
+    }
+
+    private fun setLoginView() {
         myWebView = webview
         myWebView.webChromeClient = WebChromeClient()
         myWebView.webViewClient = WebViewClient()
@@ -49,35 +42,8 @@ class MainActivity : AppCompatActivity() {
         myWebView.addJavascriptInterface(WebAppInterface(this), "Android")
         myWebView.loadUrl("http://115.86.172.10:3000/")
 
-        //권한 요청
-        if(PermissionManager.isExist_deniedPermission(this, permissionForEssential)) {
-            PermissionManager.showRequest(this,
-                PermissionManager.deniedPermListOf(this, permissionForEssential), PERMISSIONCODE_Essential,
-                "일중 이동경로 기반 호흡량 계산", "위치정보 수집")
-        }
-
-        GPSTimelineManager.initializeTimeline(this)
-
-        //if service is dead
-        if(!GatheringService.isRunning)
-            startService(Intent(this, GatheringService::class.java))
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        if (item.itemId == R.id.action_settings) {
-            val sign_up_page_move = Intent(this, Preferences::class.java)
-            startActivity(sign_up_page_move)
-        }
-        return super.onOptionsItemSelected(item)
-    }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         // Check if the key event was the Back button and if there's history
         if (keyCode == KeyEvent.KEYCODE_BACK && myWebView.canGoBack()) {
@@ -114,12 +80,13 @@ class WebAppInterface(private val mContext: Context) {
     @JavascriptInterface
     fun showToast(hey:String, hi:String, hello:String) {
         Toast.makeText(mContext, hey, Toast.LENGTH_SHORT).show()
-        val intent = Intent(mContext, MainView::class.java)
+        val intent = Intent(mContext, MainPageActivity::class.java)
         intent.putExtra("name", hey)
         intent.putExtra("age", hi)
         intent.putExtra("weight", hello)
         mContext.startActivity(intent)
     }
+
     @JavascriptInterface
     fun getUser(name:String, age:Int, weight:Int){
         Toast.makeText(mContext, name, Toast.LENGTH_SHORT).show()

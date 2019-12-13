@@ -12,9 +12,6 @@ import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import android.util.Log
-import android.widget.RemoteViews
-import android.widget.Toast
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -75,11 +72,7 @@ class GatheringService : Service(){
 
         override fun run() {
             // run on another thread
-            mHandler.post(object : Runnable {
-                override fun run() {
-                    gathering()
-                }
-            })
+            mHandler.post { gathering() }
         }
     }
 
@@ -88,7 +81,7 @@ class GatheringService : Service(){
     }
 
     private fun startInForeground(){
-        val notificationIntent = Intent(this, MainActivity::class.java)
+        val notificationIntent = Intent(this, LoginActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 
         val builder: NotificationCompat.Builder

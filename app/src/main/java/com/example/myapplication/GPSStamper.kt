@@ -7,24 +7,25 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import androidx.core.content.ContextCompat
 import android.widget.Toast
+import org.jetbrains.anko.toast
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
 class GPSStamper(private val context : Context) : LocationListener{
-    private val lm : LocationManager
+    private val lm
+            = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     var isHot = false
         private set
     val gpsTimeline = GPSTimelineManager.gpsTimeline
-    private var nowLocation : Location? = null
 
     companion object{
         val permissionForGPS: Array<String> = arrayOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.INTERNET
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
 
         var meter_MinimalDistanceFromPrev:Float = 200.toFloat()
@@ -33,17 +34,10 @@ class GPSStamper(private val context : Context) : LocationListener{
         val prevStampTimeKey = "StampTime"
     }
 
-    init{
-        lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        if(gpsTimeline.isNotEmpty())
-            nowLocation = GPSTimelineManager.gpsTimeline[0]?.location
-    }
-
     fun startGetLocation(){
-        if(PermissionManager.isExist_deniedPermission(context, permissionForGPS)) {
-            println("coarse permission : ${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
-            println("fine permission : ${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
+        if(PermissionManager.existDeniedPermission(context, permissionForGPS)) {
+            Log.d("coarse permission", "${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
+            Log.d("fine permission", "${ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED}")
             return
         }
 
@@ -55,16 +49,14 @@ class GPSStamper(private val context : Context) : LocationListener{
         println("Stamper initializing is finished.")
     }
 
-    fun stamp(): Location?{
-        if(nowLocation == null){
-            println("GPSStamper.stamp : Location is null")
-            return null
-        }
+    fun stamp(nowLocation: Location?): Location?{
+        nowLocation ?: return null
 
-        showStamping()
+        showStampingToUser()
+        val nowGPSTimeStamp = GPSTimeStamp(nowLocation)
 
         try {
-            saveToDB(GPSTimeStamp(context, nowLocation as Location))
+            saveToDB(nowGPSTimeStamp)
         }catch(e: Exception){
             println("catch in stamp... $e")
         }
@@ -81,45 +73,29 @@ class GPSStamper(private val context : Context) : LocationListener{
         return nowLocation
     }
 
-    private fun showStamping(){
+    private fun showStampingToUser(){
         val showingFormat = SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]")
 
-        Toast.makeText(
-            context.applicationContext, "위치수집 : " + showingFormat.format(Date()),
-            Toast.LENGTH_SHORT
-        ).show()
+        context.toast("위치수집 : ${showingFormat.format(Date())}")
     }
 
     private fun stopGetLocation() = lm.removeUpdates(this)
 
     private fun saveToDB(newTimeStamp: GPSTimeStamp){
-        val sqlInsert = "INSERT INTO timeline (time_mil, latitude, longitude, airJSON, provider) " +
-                "values('${newTimeStamp.location.time}', '${newTimeStamp.location.latitude}', " +
-                "'${newTimeStamp.location.longitude}', '${newTimeStamp.airInfo.toString()}', " +
-                "'${newTimeStamp.location.provider}')"
-
-        val db = TimelineDBHelper(context.applicationContext)
-        db.writableDatabase.execSQL(sqlInsert)
+        val db = TimelineDBEntry(context)
+        db.insertTimeStamp(newTimeStamp.location, newTimeStamp.airInfo)
+        DownloaderForAirInfo(context).execute(newTimeStamp)
     }
 
     override fun onLocationChanged(location: Location?) {
         location ?: return
-        if(nowLocation?.time == location.time)
-            return
 
-        nowLocation = location
-        println("Location : ${location.provider}")
-        stamp()
-        println("Misealimiback : Location has changed.")
+        stamp(location)
+        Log.d("Misealimi Stamper", "Location updated")
     }
 
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-    }
-
-    override fun onProviderEnabled(provider: String?) {
-    }
-
-    override fun onProviderDisabled(provider: String?) {
-    }
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+    override fun onProviderEnabled(provider: String?) {}
+    override fun onProviderDisabled(provider: String?) {}
 
 }

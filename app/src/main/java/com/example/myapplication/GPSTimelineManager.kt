@@ -13,15 +13,21 @@ import java.time.ZonedDateTime
 import java.util.*
 
 object GPSTimelineManager {
-    var gpsTimeline : ObservableArrayList<GPSTimeStamp> = ObservableArrayList<GPSTimeStamp>()
+    var gpsTimeline : ObservableArrayList<GPSTimeStamp> = ObservableArrayList()
         private set(newTimeLine) { field = newTimeLine }
 
-    fun initializeTimeline(context: Context){
-        val db = TimelineDBHelper(context)
-        val dbCursor = db.readableDatabase.rawQuery("SELECT * FROM timeline", null)
+    const val PERIOD_DAYS = 30
+    const val ONE_DAY_MILLI_TIME = 24 * 60 * 1000L
 
-        //TODO : db읽기 예외처리
-        if(dbCursor.moveToFirst())
+    fun initializeTimeline(context: Context){
+        val db = TimelineDBEntry(context)
+        val timelineLatest = db.loadLatestTimelineInPeriod(PERIOD_DAYS * ONE_DAY_MILLI_TIME)
+
+        timelineLatest.forEach { timestampInfo ->
+            GPSTimeStamp(timestampInfo.first, timestampInfo.second)
+        }
+
+        /*if(dbCursor.moveToFirst())
             do{
                 val location = Location(dbCursor.getString(dbCursor.getColumnIndex("provider")))
                 location.time = dbCursor.getLong(dbCursor.getColumnIndex("time_mil"))
@@ -29,13 +35,12 @@ object GPSTimelineManager {
                 location.longitude = dbCursor.getDouble(dbCursor.getColumnIndex("longitude"))
 
                 val serializedJSON = dbCursor.getString(dbCursor.getColumnIndex("airJSON"))
-                println("1serializedJSON : ${serializedJSON is String}")
-                val airInfo: AirInfoType = if(serializedJSON == "null") null
-                else JSONObject(serializedJSON)
+                //Log.d("serializedJSON", "${serializedJSON is String}")
+                val airInfo: AirInfoType = serializedJSON.let{ JSONObject(serializedJSON) }
 
-                GPSTimeStamp(context, location, airInfo)
+                GPSTimeStamp(location, airInfo)
             }while(dbCursor.moveToNext())
-        dbCursor.close()
+        dbCursor.close()*/
     }
 
     /*

@@ -11,7 +11,7 @@ import com.example.myapplication.R
 import kotlinx.android.synthetic.main.fragment_amount_info.*
 import kotlinx.android.synthetic.main.fragment_text_info.*
 
-class Text_Info : Fragment(), Observer {
+class TextInfoFragment : Fragment(), Observer {
     private var finedustInspiration: Double = 0.0
     private var isShowing = false
 

@@ -1,44 +1,67 @@
 package com.example.myapplication
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 object PermissionManager{
 
-    fun isExist_deniedPermission(context: Context, permissions: Array<out String>) : Boolean
+    fun existDeniedPermission(context: Context, permissions: Array<out String>) : Boolean
             = deniedPermListOf(context, permissions).isNotEmpty()
 
     fun deniedPermListOf(context: Context, permissions: Array<out String>): Array<String>
-        = permissions.filter {
-            PackageManager.PERMISSION_GRANTED !=
-            ContextCompat.checkSelfPermission(context, it)
-        }.toTypedArray()
+            = permissions.filter {UShort
+        (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context, it))
+                && existOnThisAPILevel(it)
+    }.toTypedArray()
 
-    fun showRequest(activity: Activity, permissions: Array<out String>, permissionCode: Int
-                    , forFeature: String, permNameForUser: String)
+    private fun existOnThisAPILevel(permission: String): Boolean
+            = when(permission){
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION ->
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        else -> true
+    }
+
+    fun showRequestWithShutdownSelection(activity: Activity
+                                         , permissions: Array<out String>
+                                         , permissionCode: Int
+                                         , message: String)
     {
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
 
-        builder.setMessage(forFeature + "기능을 위해 " + permNameForUser + "권한이 필요합니다.")
-        builder.setPositiveButton("예",
-            object: DialogInterface.OnClickListener{
-                override fun onClick(dialog: DialogInterface?, id: Int)
-                    = ActivityCompat.requestPermissions(activity, permissions, PERMISSIONCODE_Essential)
-            })
-        builder.setNegativeButton("아니오(종료)",
-            object: DialogInterface.OnClickListener{
-                override fun onClick(dialog: DialogInterface?, which: Int){
-                    activity.finishActivity(0)
-                    activity.finish()
-                    System.runFinalization()
-                    android.os.Process.killProcess(android.os.Process.myPid() )
-                }
-            })
+        builder.setMessage(message)
+        builder.setPositiveButton("예") { dialog, id ->
+            ActivityCompat.requestPermissions(activity, permissions, permissionCode)
+        }
+        builder.setNegativeButton("아니오(종료)"
+        ) { _, _ ->
+            activity.finishActivity(0)
+            activity.finish()
+            System.runFinalization()
+            android.os.Process.killProcess(android.os.Process.myPid() )
+        }
+
+        builder.show()
+    }
+
+    fun showOnlyRequestAnd(activity: Activity
+                           , permissions: Array<out String>
+                           , permissionCode: Int
+                           , message: String
+                           , doingIfNegative: ((DialogInterface, Int) -> Unit)? = null){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+
+        builder.setMessage(message)
+        builder.setPositiveButton("예") { dialog, id ->
+            ActivityCompat.requestPermissions(activity, permissions, permissionCode)
+        }
+        builder.setNegativeButton("아니오", doingIfNegative)
 
         builder.show()
     }
