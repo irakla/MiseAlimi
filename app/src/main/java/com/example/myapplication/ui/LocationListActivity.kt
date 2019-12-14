@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,10 +7,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.myapplication.GPSStampAdapter
+import com.example.myapplication.GPSStamper
+import com.example.myapplication.GPSTimelineManager
+import com.example.myapplication.R
 import kotlinx.android.synthetic.main.activity_gps_list.*
-import java.util.*
 
-class GPS_List : AppCompatActivity() {
+class LocationListActivity : AppCompatActivity() {
     private var gpsBackground: GPSStamper? = null
     val timeline = GPSTimelineManager.gpsTimeline
 
@@ -27,7 +30,11 @@ class GPS_List : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gps_list)
-        gpsTimelineView.adapter = GPSStampAdapter(this, timeline, gpsTimelineView)
+        gpsTimelineView.adapter = GPSStampAdapter(
+            this,
+            timeline,
+            gpsTimelineView
+        )
         gpsTimelineView.scrollToPosition(0)
         oneTimeStamper = GPSStamper(applicationContext)
 
@@ -44,7 +51,10 @@ class GPS_List : AppCompatActivity() {
         val preferenceInstance = preference
         preferenceInstance?: return
 
-        isOnDrawingPath = preferenceInstance.getBoolean(keyDrawingPathIsOn, isOnDrawingPath)
+        isOnDrawingPath = preferenceInstance.getBoolean(
+            keyDrawingPathIsOn,
+            isOnDrawingPath
+        )
 
         if(!isOnDrawingPath)
             toggleButtonPath()
@@ -58,7 +68,10 @@ class GPS_List : AppCompatActivity() {
                 preferenceInstanceInClick?: return
 
                 val buttonStatePreferenceEditor = preferenceInstanceInClick.edit()
-                buttonStatePreferenceEditor.putBoolean(keyDrawingPathIsOn, isOnDrawingPath)
+                buttonStatePreferenceEditor.putBoolean(
+                    keyDrawingPathIsOn,
+                    isOnDrawingPath
+                )
                 buttonStatePreferenceEditor.apply()
             }
         })

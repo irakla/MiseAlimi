@@ -4,6 +4,7 @@ import android.content.Intent
 import android.location.Location
 import android.os.Build
 import android.view.View
+import com.example.myapplication.ui.LocationMapActivity
 import java.lang.Exception
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -55,7 +56,7 @@ class GPSTimeStamp(
     override fun onClick(view: View?) {
         view?: return
 
-        val intent = Intent(view.context, LocationVisualizer::class.java)
+        val intent = Intent(view.context, LocationMapActivity::class.java)
         intent.putExtra("latitude", location.latitude)
         intent.putExtra("longitude", location.longitude)
         intent.putExtra("time", location.time)

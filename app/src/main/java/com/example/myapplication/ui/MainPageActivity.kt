@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.Manifest
 import android.content.Context
@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import android.widget.Toast
+import com.example.myapplication.*
 import kotlinx.android.synthetic.main.activity_mainview.*
 
 class MainPageActivity : AppCompatActivity() {
@@ -27,16 +28,26 @@ class MainPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //권한 요청
-        if(PermissionManager.existDeniedPermission(this, PERMISSIONCODE_ALL)) {
-            PermissionManager.showRequestWithShutdownSelection(this,
-                PermissionManager.deniedPermListOf(this, PERMISSIONCODE_ALL),
+        if(PermissionManager.existDeniedPermission(
+                this,
+                PERMISSIONCODE_ALL
+            )
+        ) {
+            PermissionManager.showRequestWithShutdownSelection(
+                this,
+                PermissionManager.deniedPermListOf(
+                    this,
+                    PERMISSIONCODE_ALL
+                ),
                 PERMISSION_CHECK_STARTUP,
-                "이동경로에 기반한 하루동안의 호흡량 계산을 위해 위치수집 권한이 필요합니다.")
+                "이동경로에 기반한 하루동안의 호흡량 계산을 위해 위치수집 권한이 필요합니다."
+            )
         }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mainview)
 
+        GPSTimelineManager.initializeTimeline(this.application)
         setFragmentSlider()
 
         val preference = getSharedPreferences("User", Context.MODE_PRIVATE)
@@ -50,17 +61,21 @@ class MainPageActivity : AppCompatActivity() {
         bundleFromLogin.putString("age", preference.getString("age", "0"))
         bundleFromLogin.putString("weight", preference.getString("weight", "0"))
 
-        viewPager.adapter = pagerAdapter(supportFragmentManager, bundleFromLogin)
+        viewPager.adapter = PagerAdapter(supportFragmentManager, bundleFromLogin)
     }
 
     private fun setFragmentSlider() {
-        val fragmentAmountInfo = AmountInfoFragment()
+        val fragmentAmountInfo =
+            AmountInfoFragment()
         val fragmentTextInfo = TextInfoFragment()
         fragmentAmountInfo.addInspirationObserver(fragmentTextInfo)
+        val fragmentAirInfo = AirInfoFragment()
+        val fragmentStatisticInfo =
 
         fragments.add(fragmentAmountInfo)
         fragments.add(fragmentTextInfo)
-        fragments.add(AirInfoFragment())
+        fragments.add(fragmentAirInfo)
+        //fragments.add(fragmentStatisticInfo)
     }
 
     override fun onResume(){
@@ -157,7 +172,7 @@ class MainPageActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    inner class pagerAdapter(fm: FragmentManager, val savedInstanceState: Bundle?) : FragmentPagerAdapter(fm) {
+    inner class PagerAdapter(fm: FragmentManager, val savedInstanceState: Bundle?) : FragmentPagerAdapter(fm) {
         override fun getCount(): Int {
             return fragments.size
         }

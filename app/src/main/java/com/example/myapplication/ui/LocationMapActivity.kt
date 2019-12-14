@@ -1,10 +1,14 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.example.myapplication.AirInfoType
+import com.example.myapplication.GPSTimeStamp
 import com.example.myapplication.GPSTimelineManager.gpsTimeline
+import com.example.myapplication.R
+import com.example.myapplication.TimeSupporter
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -15,7 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import org.json.JSONObject
 
-class LocationVisualizer : AppCompatActivity(), OnMapReadyCallback {
+class LocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
 
@@ -45,7 +49,7 @@ class LocationVisualizer : AppCompatActivity(), OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placeGathered, 16.toFloat()))
 
             if(time != null && airInfo != null)
-                if (GPS_List.isOnDrawingPath) {
+                if (LocationListActivity.isOnDrawingPath) {
                     drawTimeline()
                     mMap.addMarker(createMarker(latitude, longitude, time, airInfo))
                 } else
@@ -89,7 +93,11 @@ class LocationVisualizer : AppCompatActivity(), OnMapReadyCallback {
 
         val markerOptions = MarkerOptions().apply{
             position(nowLocationCoordinate)
-            title(TimeSupporter.translateTimeToString(timestamp.location.time))
+            title(
+                TimeSupporter.translateTimeToString(
+                    timestamp.location.time
+                )
+            )
             snippet("미세먼지 : ${pm10str}, 초미세먼지 : ${pm25str}")
         }
 
@@ -115,7 +123,11 @@ class LocationVisualizer : AppCompatActivity(), OnMapReadyCallback {
 
         val markerOptions = MarkerOptions().apply{
             position(nowLocationCoordinate)
-            title(TimeSupporter.translateTimeToString(time))
+            title(
+                TimeSupporter.translateTimeToString(
+                    time
+                )
+            )
             snippet("미세먼지 : ${pm10str}, 초미세먼지 : ${pm25str}")
         }
 

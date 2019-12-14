@@ -1,13 +1,10 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import android.os.Build
-import androidx.annotation.RequiresApi
 import android.util.Log
 import android.view.KeyEvent
 import android.webkit.JavascriptInterface
@@ -15,6 +12,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import android.webkit.WebChromeClient
+import com.example.myapplication.GPSTimelineManager
+import com.example.myapplication.GatheringService
+import com.example.myapplication.R
 import kotlinx.android.synthetic.main.content_main.*
 
 class LoginActivity : AppCompatActivity() {
@@ -27,8 +27,6 @@ class LoginActivity : AppCompatActivity() {
 
         setLoginView()
 
-        GPSTimelineManager.initializeTimeline(this.application)
-
         //if service is dead
         if(!GatheringService.isRunning)
             startService(Intent(this, GatheringService::class.java))
@@ -39,7 +37,10 @@ class LoginActivity : AppCompatActivity() {
         myWebView.webChromeClient = WebChromeClient()
         myWebView.webViewClient = WebViewClient()
         myWebView.settings.javaScriptEnabled = true
-        myWebView.addJavascriptInterface(WebAppInterface(this), "Android")
+        myWebView.addJavascriptInterface(
+            WebAppInterface(
+                this
+            ), "Android")
         myWebView.loadUrl("http://115.86.172.10:3000/")
 
     }

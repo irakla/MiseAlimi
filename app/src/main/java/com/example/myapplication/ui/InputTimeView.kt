@@ -1,12 +1,10 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.content.Context
 import android.util.Log
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TimePicker
+import com.example.myapplication.R
 import kotlinx.android.synthetic.main.fragment_input_time.view.*
 
 class InputTimeView(context: Context?) : ConstraintLayout(context){
@@ -22,8 +20,12 @@ class InputTimeView(context: Context?) : ConstraintLayout(context){
 
         val preference = context.getSharedPreferences("Time", Context.MODE_PRIVATE)
         if(preference != null) {
-            val stringGetOutTime = preference.getString("GetOutTime", DefaultGetOutTime)
-            val stringGetInTime = preference.getString("GetInTime", DefaultGetInTime)
+            val stringGetOutTime = preference.getString("GetOutTime",
+                DefaultGetOutTime
+            )
+            val stringGetInTime = preference.getString("GetInTime",
+                DefaultGetInTime
+            )
 
             val savedGetOutTime =
                 if(stringGetOutTime != null)

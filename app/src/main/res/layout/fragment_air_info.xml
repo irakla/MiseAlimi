@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/mainbottom"
-        tools:context=".AirInfoFragment" android:id="@+id/frameLayout"
+        tools:context=".ui.AirInfoFragment" android:id="@+id/frameLayout"
         android:name="airinfo">
     <TextView
             android:textColor="#ffffff"

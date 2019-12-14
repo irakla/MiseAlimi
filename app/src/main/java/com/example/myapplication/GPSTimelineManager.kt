@@ -21,10 +21,11 @@ object GPSTimelineManager {
 
     fun initializeTimeline(context: Context){
         val db = TimelineDBEntry(context)
-        val timelineLatest = db.loadLatestTimelineInPeriod(PERIOD_DAYS * ONE_DAY_MILLI_TIME)
-
-        timelineLatest.forEach { timestampInfo ->
-            GPSTimeStamp(timestampInfo.first, timestampInfo.second)
+        db.loadLatestTimelineInPeriod(PERIOD_DAYS * ONE_DAY_MILLI_TIME)
+        { timelineLatest ->
+            timelineLatest.forEach { timestampInfo ->
+                GPSTimeStamp(timestampInfo.first, timestampInfo.second)
+            }
         }
 
         /*if(dbCursor.moveToFirst())

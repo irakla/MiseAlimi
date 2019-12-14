@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
 import android.app.AlertDialog
 import android.content.Context
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.myapplication.*
 import kotlinx.android.synthetic.main.fragment_amount_info.*
 import kotlinx.android.synthetic.main.fragment_input_time.view.*
 
@@ -56,9 +57,13 @@ class AmountInfoFragment : Fragment() {
         val timePreference = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)
         if(timePreference != null) {
             val stringGetOutTime
-                    = timePreference.getString(getString(R.string.GetOutTime), DefaultGetOutTime)
+                    = timePreference.getString(getString(R.string.GetOutTime),
+                DefaultGetOutTime
+            )
             val stringGetInTime
-                    = timePreference.getString(getString(R.string.GetInTime), DefaultGetInTime)
+                    = timePreference.getString(getString(R.string.GetInTime),
+                DefaultGetInTime
+            )
 
             getOutTime =
                 if(stringGetOutTime != null)
@@ -87,8 +92,8 @@ class AmountInfoFragment : Fragment() {
 
         buttonLocationLog.setOnClickListener(object: View.OnClickListener{
             override fun onClick(v: View?) {
-                if(GPS_List.listIsNotShowing)
-                    startActivity(Intent(activity, GPS_List::class.java))
+                if(LocationListActivity.listIsNotShowing)
+                    startActivity(Intent(activity, LocationListActivity::class.java))
             }
         })
 
@@ -100,13 +105,24 @@ class AmountInfoFragment : Fragment() {
             val minuteGetOutTime = getOutTime[MINUTE].toInt()
             val hourGetInTime = getInTime[HOUR].toInt()
             val minuteGetInTime = getInTime[MINUTE].toInt()
-            val getOutIsYesterday = TimeSupporter.IsYesterdayGetOut(hourGetOutTime, minuteGetOutTime,
-                    hourGetInTime, minuteGetInTime)
+            val getOutIsYesterday =
+                TimeSupporter.IsYesterdayGetOut(
+                    hourGetOutTime, minuteGetOutTime,
+                    hourGetInTime, minuteGetInTime
+                )
 
             val detailDialog = InspirationDetailDialog(
                 activity,
-                TimeSupporter.getTheLatestMilliTime(getOutIsYesterday, hourGetOutTime, minuteGetOutTime),
-                TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime),
+                TimeSupporter.getTheLatestMilliTime(
+                    getOutIsYesterday,
+                    hourGetOutTime,
+                    minuteGetOutTime
+                ),
+                TimeSupporter.getTheLatestMilliTime(
+                    false,
+                    hourGetInTime,
+                    minuteGetInTime
+                ),
                 finedustByInspiration,
                 finedust25ByInspiration
             )
@@ -127,7 +143,8 @@ class AmountInfoFragment : Fragment() {
                 val inflater = activity?.layoutInflater
 
                 if(inflater != null) {
-                    val outTimeView = InputTimeView(activity)
+                    val outTimeView =
+                        InputTimeView(activity)
                     builder.setView(outTimeView)
 
                     builder.setPositiveButton("확인", object: DialogInterface.OnClickListener{
@@ -178,13 +195,24 @@ class AmountInfoFragment : Fragment() {
         val outTimeIsYesterday = hourGetOutTime > hourGetInTime
                 || (hourGetOutTime == hourGetInTime && minuteGetOutTime > minuteGetInTime)
 
-        val milliTimeGetOut = TimeSupporter.getTheLatestMilliTime(outTimeIsYesterday, hourGetOutTime, minuteGetOutTime)
-        val milliTimeGetIn = TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime)
+        val milliTimeGetOut =
+            TimeSupporter.getTheLatestMilliTime(
+                outTimeIsYesterday,
+                hourGetOutTime,
+                minuteGetOutTime
+            )
+        val milliTimeGetIn =
+            TimeSupporter.getTheLatestMilliTime(
+                false,
+                hourGetInTime,
+                minuteGetInTime
+            )
 
-        val timelineOnOutside = GPSTimelineManager.getTimeStampsInTheTime(
-            hourGetOutTime, minuteGetOutTime,
-            hourGetInTime, minuteGetInTime
-        )
+        val timelineOnOutside =
+            GPSTimelineManager.getTimeStampsInTheTime(
+                hourGetOutTime, minuteGetOutTime,
+                hourGetInTime, minuteGetInTime
+            )
 
         val tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
 

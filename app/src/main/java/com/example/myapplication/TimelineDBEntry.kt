@@ -1,7 +1,7 @@
 package com.example.myapplication
 
+import android.content.ContentValues
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.database.sqlite.SQLiteDatabase
 import android.location.Location
 import android.util.Log
@@ -14,42 +14,41 @@ import com.example.myapplication.TimelineDBHelper.Companion.DB_ATTR_TIME
 import com.example.myapplication.TimelineDBHelper.Companion.DB_TABLE_NAME
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 
 class TimelineDBEntry(private val context: Context) {
-    private val timelineDBHelper = TimelineDBHelper(context)
-
     companion object{
-        private var DB_INSTANCE: SQLiteDatabase? = null
+        private var DB_CONNECTION_INSTANCE: TimelineDBHelper? = null
     }
 
     init {
         synchronized(TimelineDBEntry::class) {
-            DB_INSTANCE?.let {
-                DB_INSTANCE =
-                    context.applicationContext
-                        .openOrCreateDatabase(TimelineDBHelper.DB_NAME, MODE_PRIVATE, null)
-                //DB_INSTANCE.set
+            DB_CONNECTION_INSTANCE?: let {
+                DB_CONNECTION_INSTANCE = TimelineDBHelper(context.applicationContext)
             }
         }
     }
 
-    fun loadLatestTimelineInPeriod(thePeriod: Long) : List<Pair<Location, AirInfoType>> {
-        val timelineDatabase = timelineDBHelper.readableDatabase
+    fun loadLatestTimelineInPeriod(
+        thePeriod: Long
+        , doingWithTheTimeline: (List<Pair<Location, AirInfoType>>) -> Unit
+    ) {
+        var timelineDatabase: SQLiteDatabase?
+        synchronized(TimelineDBEntry::class){
+            timelineDatabase = DB_CONNECTION_INSTANCE?.readableDatabase
+        }
         val timeFrom = System.currentTimeMillis() - thePeriod
-
-        Log.d("database", timelineDatabase.isOpen().toString())
 
         val resultTimeline = mutableListOf<Pair<Location, AirInfoType>>()
 
         GlobalScope.launch {
-            DB_INSTANCE?.let { db ->
+            timelineDatabase?.let { db ->
                 val cursor = db.rawQuery(
                     "SELECT * FROM $DB_TABLE_NAME "
-                    //+ "WHERE ${TimelineDBHelper.DB_ATTR_TIME} > $timeFrom"
+                    + "WHERE ${TimelineDBHelper.DB_ATTR_TIME} > $timeFrom"
                     , null
                 )
+                Log.d("database", "data count : ${cursor.count}")
 
                 while (cursor.moveToNext()) {
                     val airInfoString = cursor.getStringOrNull(3)
@@ -65,11 +64,10 @@ class TimelineDBEntry(private val context: Context) {
                     )
                 }
 
-                timelineDatabase.close()
+                db.close()
+                doingWithTheTimeline(resultTimeline)
             }
         }
-
-        return resultTimeline
     }
 
     fun insertTimeStamp(location: Location, airInfo: AirInfoType = null)
@@ -80,16 +78,28 @@ class TimelineDBEntry(private val context: Context) {
                 "${location.time}" +
                 ", ${location.latitude}" +
                 ", ${location.longitude}" +
-                ", \'${if (airInfo == null) null else airInfo.toString()}\'" +
+                ", \'${airInfo?.toString()}\'" +
                 ", \'${location.provider}\'" +
                 ")"
 
-        val timelineDatabase = timelineDBHelper.writableDatabase
-        DB_INSTANCE?.let { db ->
-            timelineDatabase.execSQL("BEGIN TRANSACTION")
-            timelineDatabase.execSQL(insertStatement)
-            timelineDatabase.execSQL("COMMIT TRANSACTION")
-            timelineDatabase.close()
+        var timelineDatabase: SQLiteDatabase?
+        synchronized(TimelineDBEntry::class){
+            timelineDatabase = DB_CONNECTION_INSTANCE?.writableDatabase
+        }
+        timelineDatabase?.let { db ->
+            val timestamp = ContentValues()
+            timestamp.put(DB_ATTR_TIME, location.time)
+            timestamp.put(DB_ATTR_LATITUDE, location.latitude)
+            timestamp.put(DB_ATTR_LONGITUDE, location.longitude)
+            if(airInfo == null) timestamp.put(DB_ATTR_AIRJSON, "null")
+            else timestamp.put(DB_ATTR_AIRJSON, airInfo.toString())
+            timestamp.put(DB_ATTR_PROVIDER, location.provider)
+
+            db.execSQL("BEGIN TRANSACTION")
+            //db.execSQL(insertStatement)
+            db.insertOrThrow(DB_TABLE_NAME, null, timestamp)
+            db.execSQL("COMMIT TRANSACTION")
+            db.close()
         } ?: Log.d("Database", "Instance가 null(insert)")
     }
 
@@ -101,12 +111,20 @@ class TimelineDBEntry(private val context: Context) {
                     "SET $DB_ATTR_AIRJSON = \'$newAirInfo\' " +
                     "WHERE $DB_ATTR_TIME = $timeTarget"
 
-            val timelineDatabase = timelineDBHelper.writableDatabase
-            DB_INSTANCE?.let{ db ->
-                timelineDatabase.execSQL("BEGIN TRANSACTION")
-                timelineDatabase.execSQL(updateStatement)
-                timelineDatabase.execSQL("COMMIT TRANSACTION")
-                timelineDatabase.close()
+            var timelineDatabase: SQLiteDatabase?
+            synchronized(TimelineDBEntry::class){
+                timelineDatabase = DB_CONNECTION_INSTANCE?.writableDatabase
+            }
+            timelineDatabase?.let{ db ->
+                val targetAirJSON = ContentValues()
+                targetAirJSON.put(DB_ATTR_AIRJSON, airInfo.toString())
+
+                db.execSQL("BEGIN TRANSACTION")
+                //db.execSQL(updateStatement)
+                db.update(DB_TABLE_NAME, targetAirJSON
+                    , "$DB_ATTR_TIME = ?", arrayOf(timeTarget.toString()))
+                db.execSQL("COMMIT TRANSACTION")
+                db.close()
             } ?: Log.d("Database", "Instance가 null(update)")
         }
     }
