@@ -28,7 +28,7 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
                 1, TimeUnit.HOURS
             ).build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(
                 UPDATE_WORK_TAG, ExistingPeriodicWorkPolicy.KEEP, uploadWorker
             )
         }
@@ -66,7 +66,7 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
             } ?: let{  Log.d("UploadTime formal", stringGetOutTime); return Result.success() }
         }
 
-        if(isUploadTime(milliGetInTime)) {
+        if(isNotUploadTime(milliGetInTime)) {
             Log.d("Upload Worker", "Upload Canceled")
             return Result.success()
         }
@@ -156,13 +156,13 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
         return TimeSupporter.getTheLatestMilliTime(isYesterday, hour, minute)
     }
 
-    private fun isUploadTime(milliGetInTime: Long) : Boolean {
+    private fun isNotUploadTime(milliGetInTime: Long) : Boolean {
         val nowTime = System.currentTimeMillis()
         val prevUploadTime =
             context.getSharedPreferences(UPLOAD_PREFERENCE, Context.MODE_PRIVATE)
                 .getLong(UPLOAD_PREFERENCE_TIME, 0)
         val isOnOutside = nowTime <= milliGetInTime
-        val isCompletedTodayUpload = nowTime / DAY_BY_MILLI_SEC > prevUploadTime / DAY_BY_MILLI_SEC
+        val isCompletedTodayUpload = (nowTime / DAY_BY_MILLI_SEC) > (prevUploadTime / DAY_BY_MILLI_SEC)
 
         return isOnOutside || isCompletedTodayUpload
     }

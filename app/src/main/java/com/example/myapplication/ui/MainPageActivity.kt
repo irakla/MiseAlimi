@@ -44,6 +44,8 @@ class MainPageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mainview)
 
+        PeriodicUploader.enqueueUploadWorker(this.applicationContext)
+
         GPSTimelineManager.initializeTimeline(this.application)
         setFragmentSlider()
 
