@@ -13,15 +13,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        /*kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas".toString())
-            }
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8
         }
-        sourceSets{
-            androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
-            test.assets.srcDirs += files("$projectDir/schemas".toString())
-        }*/
     }
     buildTypes {
         release {
@@ -50,4 +44,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation "androidx.work:work-runtime-ktx:2.2.0"
+
+    androidTestImplementation "androidx.work:work-testing:2.2.0"
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }

@@ -11,36 +11,33 @@ import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import android.widget.Toast
 import com.example.myapplication.*
 import kotlinx.android.synthetic.main.activity_mainview.*
+import org.jetbrains.anko.toast
 
 class MainPageActivity : AppCompatActivity() {
     var fragments = ArrayList<Fragment>()
 
     companion object{
-        val PERMISSION_CHECK_STARTUP = 1000
+        const val PERMISSION_CHECK_STARTUP = 1000
         val PERMISSIONCODE_ALL: Array<String> = arrayOf(
             Manifest.permission.ACCESS_COARSE_LOCATION
             , Manifest.permission.ACCESS_FINE_LOCATION
         )
+
+        const val PREFERENCE_USER = "User"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //권한 요청
-        if(PermissionManager.existDeniedPermission(
-                this,
-                PERMISSIONCODE_ALL
-            )
-        ) {
+        if(PermissionManager.existDeniedPermission(this, PERMISSIONCODE_ALL)) {
             PermissionManager.showRequestWithShutdownSelection(
                 this,
                 PermissionManager.deniedPermListOf(
-                    this,
-                    PERMISSIONCODE_ALL
-                ),
-                PERMISSION_CHECK_STARTUP,
-                "이동경로에 기반한 하루동안의 호흡량 계산을 위해 위치수집 권한이 필요합니다."
+                    this
+                    , PERMISSIONCODE_ALL)
+                    , PERMISSION_CHECK_STARTUP
+                , "이동경로에 기반한 하루동안의 호흡량 계산을 위해 위치수집 권한이 필요합니다."
             )
         }
 
@@ -50,16 +47,26 @@ class MainPageActivity : AppCompatActivity() {
         GPSTimelineManager.initializeTimeline(this.application)
         setFragmentSlider()
 
-        val preference = getSharedPreferences("User", Context.MODE_PRIVATE)
-        preference.edit().putString("name",intent.getStringExtra("name")).apply()
-        preference.edit().putString("age",intent.getStringExtra("age")).apply()
-        preference.edit().putString("weight", intent.getStringExtra("weight")).apply()
-        Toast.makeText(this, preference.getString("name","seokwon"), Toast.LENGTH_SHORT).show()
+        val userName = intent.getStringExtra("name")
+        val userAge = intent.getIntExtra("age", 0)
+        val userWeight = intent.getIntExtra("weight", 0)
+        val userTidalVolume = calculateTidalVolume(userAge, userWeight)
+
+        val preference = getSharedPreferences(PREFERENCE_USER, Context.MODE_PRIVATE)
+        toast("Login : $userName")
+
+        preference.edit()
+            .putString("name", userName)
+            .putInt("age", userAge)
+            .putInt("weight", userWeight)
+            .putInt("tidalVolume", userTidalVolume)
+            .apply()
 
         var bundleFromLogin = Bundle()
-        bundleFromLogin.putString("name", preference.getString("name", ""))
-        bundleFromLogin.putString("age", preference.getString("age", "0"))
-        bundleFromLogin.putString("weight", preference.getString("weight", "0"))
+        bundleFromLogin.putString("name", userName)
+        bundleFromLogin.putInt("age", userAge)
+        bundleFromLogin.putInt("weight", userWeight)
+        bundleFromLogin.putInt("tidalVolume", userTidalVolume)
 
         viewPager.adapter = PagerAdapter(supportFragmentManager, bundleFromLogin)
     }
@@ -170,6 +177,22 @@ class MainPageActivity : AppCompatActivity() {
             startActivity(sign_up_page_move)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    //unit : mL
+    private fun calculateTidalVolume(age: Int, weight: Int) : Int{
+        val userInspirationRate = when(age){
+            in 0 .. 2 -> 33
+            in 3.. 5 -> 25
+            in 6 .. 9 -> 22
+            in 10 until 20 -> 20
+            in 20 until 65 -> 14
+            in 65 until 80 -> 18
+            in 80 .. Int.MAX_VALUE ->  22
+            else -> -1
+        }
+
+        return 7 * weight * userInspirationRate
     }
 
     inner class PagerAdapter(fm: FragmentManager, val savedInstanceState: Bundle?) : FragmentPagerAdapter(fm) {

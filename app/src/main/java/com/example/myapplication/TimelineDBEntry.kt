@@ -29,45 +29,70 @@ class TimelineDBEntry(private val context: Context) {
         }
     }
 
-    fun loadLatestTimelineInPeriod(
-        thePeriod: Long
+    fun loadTimelineSince(
+        within: Long
         , doingWithTheTimeline: (List<Pair<Location, AirInfoType>>) -> Unit
     ) {
-        var timelineDatabase: SQLiteDatabase?
-        synchronized(TimelineDBEntry::class){
-            timelineDatabase = DB_CONNECTION_INSTANCE?.readableDatabase
-        }
-        val timeFrom = System.currentTimeMillis() - thePeriod
-
-        val resultTimeline = mutableListOf<Pair<Location, AirInfoType>>()
+        val timeFrom = System.currentTimeMillis() - within
 
         GlobalScope.launch {
-            timelineDatabase?.let { db ->
-                val cursor = db.rawQuery(
-                    "SELECT * FROM $DB_TABLE_NAME "
-                    + "WHERE ${TimelineDBHelper.DB_ATTR_TIME} > $timeFrom"
-                    , null
-                )
-                Log.d("database", "data count : ${cursor.count}")
+            val timelineOnCondition =
+                loadTimeline("WHERE $DB_ATTR_TIME > $timeFrom")
 
-                while (cursor.moveToNext()) {
-                    val airInfoString = cursor.getStringOrNull(3)
-                    resultTimeline.add(
-                        Pair(
-                            Location(cursor.getString(4)).apply {
-                                //provider
-                                time = cursor.getLong(0)
-                                latitude = cursor.getDouble(1)
-                                longitude = cursor.getDouble(2)
-                            }
-                            , if (airInfoString == "null") null else JSONObject(airInfoString))
-                    )
-                }
-
-                db.close()
-                doingWithTheTimeline(resultTimeline)
-            }
+            doingWithTheTimeline(timelineOnCondition)
         }
+    }
+
+    fun loadTimelinePeriodOrderByLatest(
+        theTimeFrom: Long, theTimeTo: Long
+        , doingWithTheTimeline: (List<Pair<Location, AirInfoType>>) -> Unit
+    ) = GlobalScope.launch {
+        val timelineOnCondition =
+            loadTimeline(
+                "WHERE $DB_ATTR_TIME BETWEEN $theTimeFrom AND $theTimeTo " +
+                        "ORDER BY $DB_ATTR_TIME DESC"
+            )
+
+        doingWithTheTimeline(timelineOnCondition)
+    }
+
+    fun loadTimelineLatestTheTime(theTime: Long) : Pair<Location, AirInfoType>? {
+        val timelineOnCondition =
+            loadTimeline(
+                "WHERE $DB_ATTR_TIME < $theTime " +
+                        "ORDER BY $DB_ATTR_TIME DESC LIMIT 1"
+            )
+
+        return if(timelineOnCondition.isEmpty()) null
+        else timelineOnCondition[0]
+    }
+
+    fun loadTimeline(conditionClause: String) : List<Pair<Location, AirInfoType>>{
+        var timelineDatabase: SQLiteDatabase? = DB_CONNECTION_INSTANCE?.readableDatabase
+        val resultTimeline = mutableListOf<Pair<Location, AirInfoType>>()
+
+        timelineDatabase?.let { db ->
+            val cursor = db.rawQuery("SELECT * FROM $DB_TABLE_NAME $conditionClause", null)
+            Log.d("database", "data count : ${cursor.count}")
+
+            while (cursor.moveToNext()) {
+                val airInfoString = cursor.getStringOrNull(3)
+                resultTimeline.add(
+                    Pair(
+                        Location(cursor.getString(4)).apply {
+                            //provider
+                            time = cursor.getLong(0)
+                            latitude = cursor.getDouble(1)
+                            longitude = cursor.getDouble(2)
+                        }
+                        , if (airInfoString == "null") null else JSONObject(airInfoString))
+                )
+            }
+
+            db.close()
+        }
+
+        return resultTimeline
     }
 
     fun insertTimeStamp(location: Location, airInfo: AirInfoType = null)
@@ -83,9 +108,7 @@ class TimelineDBEntry(private val context: Context) {
                 ")"
 
         var timelineDatabase: SQLiteDatabase?
-        synchronized(TimelineDBEntry::class){
-            timelineDatabase = DB_CONNECTION_INSTANCE?.writableDatabase
-        }
+        timelineDatabase = DB_CONNECTION_INSTANCE?.writableDatabase
         timelineDatabase?.let { db ->
             val timestamp = ContentValues()
             timestamp.put(DB_ATTR_TIME, location.time)
@@ -112,9 +135,7 @@ class TimelineDBEntry(private val context: Context) {
                     "WHERE $DB_ATTR_TIME = $timeTarget"
 
             var timelineDatabase: SQLiteDatabase?
-            synchronized(TimelineDBEntry::class){
-                timelineDatabase = DB_CONNECTION_INSTANCE?.writableDatabase
-            }
+            timelineDatabase = DB_CONNECTION_INSTANCE?.writableDatabase
             timelineDatabase?.let{ db ->
                 val targetAirJSON = ContentValues()
                 targetAirJSON.put(DB_ATTR_AIRJSON, airInfo.toString())

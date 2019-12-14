@@ -1,17 +1,15 @@
-package com.example.myapplication
+package com.example.myapplication.ui
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.myapplication.InspirationObserver
 import com.example.myapplication.R
-import kotlinx.android.synthetic.main.fragment_amount_info.*
 import kotlinx.android.synthetic.main.fragment_text_info.*
 
-class TextInfoFragment : Fragment(), Observer {
+class TextInfoFragment : Fragment(), InspirationObserver {
     private var finedustInspiration: Double = 0.0
     private var isShowing = false
 
@@ -66,11 +64,8 @@ class TextInfoFragment : Fragment(), Observer {
         textView13.text = String.format("실제 흡입량 : %,.2fug", realkf80)
     }
 
-    override fun update(valueChanged: Any?) {
-        if(valueChanged is Double)
-            finedustInspiration = valueChanged
-        else
-            return
+    override fun update(pm10: Double, pm25: Double, getInTime: Long, getOutTime: Long) {
+        finedustInspiration = pm10 + pm25
 
         if(isShowing)
             setContent()

@@ -24,37 +24,31 @@ class AmountInfoFragment : Fragment() {
     private var userName: String? = ""
     private var userAge: Int? = 0
     private var userWeight: Int? = 0
-    private var userInspiRate: Int? = null
+    private var userTidalVolume: Int? = null
 
     private var getOutTime = DefaultGetOutTime.split(":")
     private var getInTime = DefaultGetInTime.split(":")
 
     private var finedustByInspiration: Double = 0.0
     private var finedust25ByInspiration: Double = 0.0
-    private val observersForInspiration: MutableList<Observer> = mutableListOf()
+    private val observersForInspiration: MutableList<InspirationObserver> = mutableListOf()
+
+    companion object{
+        const val TIME_PREFERENCE_NAME = "Time"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        userName = arguments?.getString("name", userName)
-        userAge = arguments?.getString("age", userAge.toString())?.toInt()
-        userWeight = arguments?.getString("weight", userWeight.toString())?.toInt()
+        arguments?.let {
+            userName = arguments?.getString("name", userName)
+            userAge = arguments?.getInt("age", 0)
+            userWeight = arguments?.getInt("weight", 0)
+            userTidalVolume = arguments?.getInt("tidalVolume", 0)
+        } ?: let { Log.d("AmountInfo", "User값 전달되지 않음"); return null }
 
-        if(userInspiRate == null) {
-            userInspiRate = when (userAge) {
-                in 0 .. 2 -> 33
-                in 3.. 5 -> 25
-                in 6 .. 9 -> 22
-                in 10 until 20 -> 20
-                in 20 until 65 -> 14
-                in 65 until 80 -> 18
-                in 80 .. Int.MAX_VALUE ->  22
-                else -> -1
-            }
-        }
-
-        val timePreference = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)
+        val timePreference = activity?.getSharedPreferences(TIME_PREFERENCE_NAME, Context.MODE_PRIVATE)
         if(timePreference != null) {
             val stringGetOutTime
                     = timePreference.getString(getString(R.string.GetOutTime),
@@ -106,7 +100,7 @@ class AmountInfoFragment : Fragment() {
             val hourGetInTime = getInTime[HOUR].toInt()
             val minuteGetInTime = getInTime[MINUTE].toInt()
             val getOutIsYesterday =
-                TimeSupporter.IsYesterdayGetOut(
+                TimeSupporter.isYesterdayGetOut(
                     hourGetOutTime, minuteGetOutTime,
                     hourGetInTime, minuteGetInTime
                 )
@@ -130,7 +124,7 @@ class AmountInfoFragment : Fragment() {
             detailDialog.show()
         }
 
-        if(userWeight == null || userInspiRate == null)
+        if(userTidalVolume == null)
             return
 
         setDustInspiration()
@@ -154,7 +148,7 @@ class AmountInfoFragment : Fragment() {
                             getOutTime = getOutTimeString.split(":")
                             getInTime = getInTimeString.split(":")
 
-                            val timePreferenceEditor = activity?.getSharedPreferences("Time", Context.MODE_PRIVATE)?.edit()
+                            val timePreferenceEditor = activity?.getSharedPreferences(TIME_PREFERENCE_NAME, Context.MODE_PRIVATE)?.edit()
                             timePreferenceEditor?.putString("GetOutTime", getOutTimeString)
                             timePreferenceEditor?.putString("GetInTime", getInTimeString)
                             timePreferenceEditor?.apply()
@@ -184,7 +178,7 @@ class AmountInfoFragment : Fragment() {
     }
 
     private fun setDustInspiration(){
-        if(userWeight == null || userInspiRate == null)
+        if(userTidalVolume == null)
             return
 
         val hourGetOutTime = getOutTime[HOUR].toInt()
@@ -198,101 +192,71 @@ class AmountInfoFragment : Fragment() {
         val milliTimeGetOut =
             TimeSupporter.getTheLatestMilliTime(
                 outTimeIsYesterday,
-                hourGetOutTime,
-                minuteGetOutTime
+                hourGetOutTime, minuteGetOutTime
             )
         val milliTimeGetIn =
             TimeSupporter.getTheLatestMilliTime(
                 false,
-                hourGetInTime,
-                minuteGetInTime
-            )
-
-        val timelineOnOutside =
-            GPSTimelineManager.getTimeStampsInTheTime(
-                hourGetOutTime, minuteGetOutTime,
                 hourGetInTime, minuteGetInTime
             )
 
-        val tidalVolumePerMinute_mL = 7 * userWeight as Int * userInspiRate as Int
+        val dbEntry = context?.let { context -> TimelineDBEntry(context) }
 
-        //위치 값 반영
-        var timeNextTimeStamp = milliTimeGetIn
-        val airInfoGetOutTime = timelineOnOutside.last()?.airInfo
+        val timelineOnOutside = dbEntry?.loadTimelinePeriodOrderByLatest(
+            milliTimeGetOut, milliTimeGetIn
+        ) { timelineOnOutside ->
+            //위치 값 반영
+            var timeNextTimeStamp = milliTimeGetIn
 
-        timelineOnOutside.dropLast(1).forEach{
-            if(it == null)
-                return@forEach
+            var nowPM10 = 0
+            var nowPM25 = 0
+            timelineOnOutside.forEach {
+                val nowLocation = it.first
+                val nowAirInfo = it.second
 
-            val pm10str = it.airInfo?.getString("pm10Value")
-            val pm10 = if(pm10str == "-" || pm10str == null) 0 else pm10str.toInt()
+                val pm10str = nowAirInfo?.getString("pm10Value")
+                nowPM10 = if (pm10str == "-" || pm10str == null) 0 else pm10str.toInt()
 
-            val pm25str = it.airInfo?.getString("pm25Value")
-            val pm25 = if(pm25str == "-" || pm25str == null) 0 else pm25str.toInt()
+                val pm25str = nowAirInfo?.getString("pm25Value")
+                nowPM25 = if (pm25str == "-" || pm25str == null) 0 else pm25str.toInt()
 
-            val timeInterval = (timeNextTimeStamp - it.location.time).toDouble() / MINUTE_BY_MILLI_SEC
+                val timeInterval =
+                    (timeNextTimeStamp - nowLocation.time).toDouble() / MINUTE_BY_MILLI_SEC
 
-            finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10
-            finedust25ByInspiration += timeInterval * tidalVolumePerMinute_mL * pm25
-            timeNextTimeStamp = it.location.time
-        }
-
-        if(airInfoGetOutTime != null){
-            val pm10str = airInfoGetOutTime.getString("pm10Value")
-            val pm10 = if(pm10str == "-" || pm10str == null) 0 else pm10str.toInt()
-
-            val pm25str = airInfoGetOutTime.getString("pm25Value")
-            val pm25 = if(pm25str == "-" || pm25str == null) 0 else pm25str.toInt()
-
-            val timeInterval = (timeNextTimeStamp - milliTimeGetOut).toDouble() / MINUTE_BY_MILLI_SEC
-
-
-            finedustByInspiration += timeInterval * tidalVolumePerMinute_mL * pm10
-            finedust25ByInspiration += timeInterval * tidalVolumePerMinute_mL * pm25
-
-        }
-
-        finedustByInspiration /= 1000000                    //mL 보정
-        finedust25ByInspiration /= 1000000
-        inspirationView.text = String.format("%,.2fμg", finedustByInspiration + finedust25ByInspiration)
-        //위치 값 반영
-
-        //초안(외출시간 * 첫번째 값 미세먼지)
-        /*var flagIsNotGot = true
-        val time_OnOutsideByMinute = (
-                TimeSupporter.getTheLatestMilliTime(false, hourGetInTime, minuteGetInTime) -
-                        TimeSupporter.getTheLatestMilliTime(outTimeIsYesterday, hourGetOutTime, minuteGetOutTime)
-        ) / MINUTE_BY_MILLI_SEC.toDouble()
-        GPSTimelineManager.gpsTimeline.forEach{
-            if(it.airInfo == null)
-                return@forEach
-
-            val pm10str = it.airInfo?.getString("pm10Value")
-            val pm10 = if(pm10str == "-" || pm10str == null) null else pm10str.toInt()
-
-            if(pm10 == null)
-                return@forEach
-
-            if(flagIsNotGot) {
-                finedustByInspiration = time_OnOutsideByMinute * tidalVolumePerMinute_mL * pm10.toInt()
-                flagIsNotGot = false
+                userTidalVolume?.let { nowUserTidalVolume ->
+                    finedustByInspiration += timeInterval * nowUserTidalVolume * nowPM10
+                    finedust25ByInspiration += timeInterval * nowUserTidalVolume * nowPM25
+                }
+                timeNextTimeStamp = nowLocation.time
             }
+            val timeInterval =
+                (timeNextTimeStamp - milliTimeGetOut).toDouble() / MINUTE_BY_MILLI_SEC
+
+            userTidalVolume?.let { nowUserTidalVolume ->
+                finedustByInspiration += timeInterval * nowUserTidalVolume * nowPM10
+                finedust25ByInspiration += timeInterval * nowUserTidalVolume * nowPM25
+            }
+
+            finedustByInspiration /= 1000000.0                    //mL 보정
+            finedust25ByInspiration /= 1000000.0
+            inspirationView.text = String.format("%,.2fμg", finedustByInspiration + finedust25ByInspiration)
         }
 
-        finedustByInspiration /= 1000000                                         //mL 보정
-        expectationText.setText(String.format("%,.2fμg", finedustByInspiration))*/
-        //초안(외출시간 * 첫번째 값 미세먼지)
-
-        observersForInspiration.forEach{ it.update(finedustByInspiration + finedust25ByInspiration) }
+        observersForInspiration.forEach{
+            it.update(
+                finedustByInspiration, finedust25ByInspiration
+                , milliTimeGetIn, milliTimeGetOut
+            )
+        }
     }
 
-    fun addInspirationObserver(observer: Observer){
-        if(!observersForInspiration.contains(observer))
-            observersForInspiration.add(observer)
+    fun addInspirationObserver(inspirationObserver: InspirationObserver){
+        if(!observersForInspiration.contains(inspirationObserver))
+            observersForInspiration.add(inspirationObserver)
     }
 
-    fun delInspirationObserver(observer: Observer){
-        if(observersForInspiration.contains(observer))
-            observersForInspiration.remove(observer)
+    fun delInspirationObserver(inspirationObserver: InspirationObserver){
+        if(observersForInspiration.contains(inspirationObserver))
+            observersForInspiration.remove(inspirationObserver)
     }
 }

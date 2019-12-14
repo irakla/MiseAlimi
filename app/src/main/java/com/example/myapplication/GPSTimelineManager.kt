@@ -2,15 +2,6 @@ package com.example.myapplication
 
 import android.content.Context
 import androidx.databinding.ObservableArrayList
-import android.location.Location
-import android.os.Build
-import android.util.Log
-import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.util.*
 
 object GPSTimelineManager {
     var gpsTimeline : ObservableArrayList<GPSTimeStamp> = ObservableArrayList()
@@ -21,7 +12,7 @@ object GPSTimelineManager {
 
     fun initializeTimeline(context: Context){
         val db = TimelineDBEntry(context)
-        db.loadLatestTimelineInPeriod(PERIOD_DAYS * ONE_DAY_MILLI_TIME)
+        db.loadTimelineSince(PERIOD_DAYS * ONE_DAY_MILLI_TIME)
         { timelineLatest ->
             timelineLatest.forEach { timestampInfo ->
                 GPSTimeStamp(timestampInfo.first, timestampInfo.second)

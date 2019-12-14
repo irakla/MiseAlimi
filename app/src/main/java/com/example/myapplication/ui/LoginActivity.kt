@@ -12,7 +12,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import android.webkit.WebChromeClient
-import com.example.myapplication.GPSTimelineManager
 import com.example.myapplication.GatheringService
 import com.example.myapplication.R
 import kotlinx.android.synthetic.main.content_main.*
@@ -64,27 +63,27 @@ class LoginActivity : AppCompatActivity() {
         //////for log
         Log.i(this.javaClass.name + ".PermissionResult","requestCode : $requestCode")
         println()
-        for(index: Int in 0..grantResults.size - 1)
-            Log.i(this.javaClass.name + ".PermissionResult", permissions[index] + " : " + if(grantResults[index] == 0) "허가됨" else "불허")
+        for(index in grantResults.indices)
+            Log.i(this.javaClass.name +
+                    ".PermissionResult", permissions[index] + " : " +
+                    if(grantResults[index] == 0) "허가됨" else "불허")
     }
 }
     private class MyWebViewClient : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            if (view != null) {
-                view.loadUrl(url)
-            }
+            view?.loadUrl(url)
             return false
         }
 }
 class WebAppInterface(private val mContext: Context) {
     /** Show a toast from the web page  */
     @JavascriptInterface
-    fun showToast(hey:String, hi:String, hello:String) {
-        Toast.makeText(mContext, hey, Toast.LENGTH_SHORT).show()
+    fun showToast(userName:String, userAge:String, userWeight:String) {
+        Toast.makeText(mContext, userName, Toast.LENGTH_SHORT).show()
         val intent = Intent(mContext, MainPageActivity::class.java)
-        intent.putExtra("name", hey)
-        intent.putExtra("age", hi)
-        intent.putExtra("weight", hello)
+        intent.putExtra("name", userName)
+        intent.putExtra("age", userAge.toInt())
+        intent.putExtra("weight", userWeight.toInt())
         mContext.startActivity(intent)
     }
 

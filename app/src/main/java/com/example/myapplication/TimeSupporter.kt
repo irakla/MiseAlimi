@@ -16,20 +16,13 @@ const val ZERODAY = 0
 
 class TimeSupporter {
     companion object {
-        fun IsYesterdayGetOut(
+        fun isYesterdayGetOut(
             getOutHour: Int,
             getOutMinute: Int,
             getInHour: Int,
             getInMinute: Int
-        ) : Boolean{
-            if(getOutHour > getInHour)
-                return true
-            else if(getOutHour == getInHour
-                && getOutMinute > getInMinute)
-                return true
-            else
-                return false
-        }
+        ) = if(getOutHour > getInHour) true
+            else (getOutHour == getInHour && getOutMinute > getInMinute)
 
         fun getTheLatestMilliTime(
             isYesterday: Boolean,
