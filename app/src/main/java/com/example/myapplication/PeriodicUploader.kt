@@ -66,10 +66,10 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
             } ?: let{  Log.d("UploadTime formal", stringGetOutTime); return Result.success() }
         }
 
-        /*if(isNotUploadTime(milliGetInTime)) {
+        if(isNotUploadTime(milliGetInTime)) {
             Log.d("Upload Worker", "Upload Canceled")
             return Result.success()
-        }*/
+        }
 
         val dbEntry = TimelineDBEntry(context)
 
@@ -176,14 +176,15 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
     ) : AsyncTask<String, Void, String>(){
         private var updateURLString = ""
 
-        override fun doInBackground(vararg p0: String?): String {
+        override fun doInBackground(vararg p0: String?): String? {
             var conn: HttpURLConnection? = null
             var response = StringBuilder()
 
             val userName = context.getSharedPreferences(MainPageActivity.PREFERENCE_USER, Context.MODE_PRIVATE)
                 .getString("name", "")
 
-            userName ?: return "No Connection"
+            if(userName == "")
+                return null
 
             updateURLString = "http://115.86.172.10:3000/finedust" +
             "/$userName/${System.currentTimeMillis()}/$inspirationPM10/$inspirationPM25" +

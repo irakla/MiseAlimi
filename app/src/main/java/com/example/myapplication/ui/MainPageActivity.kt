@@ -71,6 +71,7 @@ class MainPageActivity : AppCompatActivity() {
         bundleFromLogin.putInt("tidalVolume", userTidalVolume)
 
         viewPager.adapter = PagerAdapter(supportFragmentManager, bundleFromLogin)
+        viewPager.currentItem = 1
     }
 
     private fun setFragmentSlider() {
@@ -79,12 +80,12 @@ class MainPageActivity : AppCompatActivity() {
         val fragmentTextInfo = TextInfoFragment()
         fragmentAmountInfo.addInspirationObserver(fragmentTextInfo)
         val fragmentAirInfo = AirInfoFragment()
-        val fragmentStatisticInfo =
+        val fragmentStatisticInfo = StatisticFragment()
 
+        fragments.add(fragmentStatisticInfo)
         fragments.add(fragmentAmountInfo)
         fragments.add(fragmentTextInfo)
         fragments.add(fragmentAirInfo)
-        //fragments.add(fragmentStatisticInfo)
     }
 
     override fun onResume(){
