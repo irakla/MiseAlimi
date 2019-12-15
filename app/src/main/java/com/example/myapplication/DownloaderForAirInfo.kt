@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Context
 import android.os.AsyncTask
+import com.example.myapplication.ui.MainPageActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONException

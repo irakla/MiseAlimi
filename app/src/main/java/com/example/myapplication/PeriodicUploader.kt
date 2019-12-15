@@ -66,10 +66,10 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
             } ?: let{  Log.d("UploadTime formal", stringGetOutTime); return Result.success() }
         }
 
-        if(isNotUploadTime(milliGetInTime)) {
+        /*if(isNotUploadTime(milliGetInTime)) {
             Log.d("Upload Worker", "Upload Canceled")
             return Result.success()
-        }
+        }*/
 
         val dbEntry = TimelineDBEntry(context)
 
@@ -168,26 +168,34 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
     }
 
     private class UploadTask(
-        inspirationPM10: Double
-        , inspirationPM25: Double
-        , centerLatitude: Double
-        , centerLongitude: Double
+        private val inspirationPM10: Double
+        , private val inspirationPM25: Double
+        , private val centerLatitude: Double
+        , private val centerLongitude: Double
         , private val context: Context
     ) : AsyncTask<String, Void, String>(){
-        private val updateURLString = "http://115.86.172.10:3000/finedust" +
-                "/${System.currentTimeMillis()}/$inspirationPM10/$inspirationPM25" +
-                "/$centerLatitude/$centerLongitude"
+        private var updateURLString = ""
 
         override fun doInBackground(vararg p0: String?): String {
             var conn: HttpURLConnection? = null
             var response = StringBuilder()
+
+            val userName = context.getSharedPreferences(MainPageActivity.PREFERENCE_USER, Context.MODE_PRIVATE)
+                .getString("name", "")
+
+            userName ?: return "No Connection"
+
+            updateURLString = "http://115.86.172.10:3000/finedust" +
+            "/$userName/${System.currentTimeMillis()}/$inspirationPM10/$inspirationPM25" +
+                    "/$centerLatitude/$centerLongitude"
 
             try{
                 Log.d("UpdateTask", updateURLString)
                 conn = URL(updateURLString).openConnection() as? HttpURLConnection
 
                 if(conn?.responseCode == HttpURLConnection.HTTP_OK) {
-                    val isr = InputStreamReader(conn.inputStream)
+                    //println(conn.url.toString())
+                    val isr = InputStreamReader(conn.inputStream, "UTF-8")
                     val reader = BufferedReader(isr)
 
                     reader.forEachLine { response.append(it) }
@@ -202,7 +210,8 @@ class PeriodicUploader(private val context: Context, workerParams: WorkerParamet
                 conn?.disconnect()
             }
 
-            return response.toString()
+            //println("$response")
+            return "$response"
         }
 
         override fun onPostExecute(result: String?) {
