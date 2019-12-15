@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.example.myapplication.*
 import kotlinx.android.synthetic.main.fragment_amount_info.*
 import kotlinx.android.synthetic.main.fragment_input_time.view.*
+import org.jetbrains.anko.runOnUiThread
 
 //for string-splitted time array
 const val HOUR = 0
@@ -239,7 +240,11 @@ class AmountInfoFragment : Fragment() {
 
             finedustByInspiration /= 1000000.0                    //mL 보정
             finedust25ByInspiration /= 1000000.0
-            inspirationView.text = String.format("%,.2fμg", finedustByInspiration + finedust25ByInspiration)
+
+            context?.runOnUiThread {
+                inspirationView.text =
+                    String.format("%,.2fμg", finedustByInspiration + finedust25ByInspiration)
+            }
         }
 
         observersForInspiration.forEach{
