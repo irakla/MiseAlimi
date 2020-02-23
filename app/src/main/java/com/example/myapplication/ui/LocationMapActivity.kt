@@ -128,7 +128,7 @@ class LocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     time
                 )
             )
-            snippet("미세먼지 : ${pm10str}, 초미세먼지 : ${pm25str}")
+            snippet("미세먼지 : ${pm10str}㎍/m³, 초미세먼지 : ${pm25str}㎍/m³")
         }
 
         return markerOptions
